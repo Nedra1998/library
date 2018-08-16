@@ -21,13 +21,13 @@ class CreateUser extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
   }
 
   handleCreate(){
-    axios.post('/users/register', this.state).then(res => {
+    axios.post('/api/users/register', this.state).then(res => {
       if('error' in res.data) this.setState({'status': res.data.error});
       else this.setState({status: 'SUCCESS'});
     });

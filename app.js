@@ -23,22 +23,28 @@ app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public/images')));
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(session({name:'session', secret: 'collectiondb', resave: false, saveUninitialized:true}));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-var mongoDB = 'mongodb://localhost/collection';
+// var mongoDB = 'mongodb://localhost/collection';
+var mongoDB = 'mongodb://Admin:ArdenRasmussen1998@ds131687.mlab.com:31687/rasmussen-collection';
 mongoose.connect(mongoDB);
 mongoose.Promise=global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use('/', indexRouter);
-app.use('/people', peopleRouter);
-app.use('/book', bookRouter);
-app.use('/users', usersRouter);
+app.use('/api/people', peopleRouter);
+app.use('/api/book', bookRouter);
+app.use('/api/users', usersRouter);
+app.use('/api', indexRouter);
+app.get('*', function(req, res){
+  res.json({"HI": "HELLO"});
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+})
 
 global.appRoot = path.resolve(__dirname);
 

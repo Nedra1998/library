@@ -15,7 +15,7 @@ class People extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
   }

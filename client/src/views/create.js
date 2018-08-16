@@ -50,7 +50,7 @@ class Create extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
   }
@@ -66,7 +66,7 @@ class Create extends Component {
       for (var key in this.state){
         formData.append(key, this.state[key]);
       }
-      axios.post('/', formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
+      axios.post('/api/', formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
         if('error' in res.data) this.setState({status: res.data.error});
         else this.setState({ loggedIn: false, title: '', authors: [''], publisher: '', printer: '', date: '0001-01-01', description: '', owners: [], cost: 0, acquired: '0001-01-01', source: '', type: 'BOOK', status: 'SUCCESS' });
       });

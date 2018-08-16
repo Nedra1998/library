@@ -17,7 +17,7 @@ class SearchBox extends Component{
   }
 
   handleSearch(){
-    axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/search?query=' + this.state.query).then(res => {
+    axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/search?query=' + this.state.query).then(res => {
       this.setState({results: res.data});
     })
   }

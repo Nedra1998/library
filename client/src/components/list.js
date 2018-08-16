@@ -27,21 +27,21 @@ class List extends Component {
   getResults(){
     if(this.state.sort === 'Title'){
       if(this.state.letter !== 'all'){
-        axios.get((this.props.src !== 'home' ? '/' + this.props.src : '' ) + '/letter/' + this.state.letter).then(res => {
+        axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api' ) + '/letter/' + this.state.letter).then(res => {
           this.setState({results : res.data});
         });
       }else{
-        axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/all').then(res => {
+        axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/all').then(res => {
           this.setState({results: res.data}, () => {console.log(this.state)});
         });
       }
     }else{
       if(this.state.letter !== 'all'){
-        axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/date/' + this.state.letter).then(res => {
+        axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/date/' + this.state.letter).then(res => {
           this.setState({results : res.data});
         });
       }else{
-        axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/all?sort=date').then(res => {
+        axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/all?sort=date').then(res => {
           this.setState({results: res.data});
         });
       }
@@ -50,7 +50,7 @@ class List extends Component {
 
   getLetters(){
     if(this.state.sort === 'Title'){
-      axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/index').then(res => {
+      axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/index').then(res => {
         var letters = new Set([]);
         var titles = res.data;
         if(titles){
@@ -59,7 +59,7 @@ class List extends Component {
         this.setState({letters: Array.from(letters).sort()});
       });
     }else{
-      axios.get((this.props.src !== 'home' ? '/' + this.props.src : '') + '/dates').then(res => {
+      axios.get((this.props.src !== 'home' ? '/api/' + this.props.src : '/api') + '/dates').then(res => {
         var century = new Set([]);
         var dates = res.data;
         dates.forEach(str => { if(str.substr(0, 4) !== '0001') {century.add(Math.floor(parseInt(str.substr(0, 4), 10) / 100) * 100)}});

@@ -65,10 +65,10 @@ class Modify extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
-    axios.get('/entry/' + this.state.title).then(res => {
+    axios.get('/api/entry/' + this.state.title).then(res => {
       this.setState({
         title: res.data.title,
         authors: res.data.author,
@@ -100,7 +100,7 @@ class Modify extends Component {
           formData.append(key, this.state[key]);
         }
       }
-      axios.post('/modify/' + this.state.id, formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
+      axios.post('/api/modify/' + this.state.id, formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
         if('error' in res.data) this.setState({status: res.data.error});
         else this.setState({status: 'SUCCESS'});
       });

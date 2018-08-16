@@ -17,7 +17,7 @@ class Footer extends Component {
   }
 
   handleLogout(){
-    axios.get('/users/logout').then(res => {this.setState({loggedIn: false})});
+    axios.get('/api/users/logout').then(res => {this.setState({loggedIn: false})});
   }
 
   renderOptions(){

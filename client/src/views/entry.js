@@ -36,10 +36,10 @@ class Entry extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
-    axios.get('/entry/' + this.state.id).then(res => {
+    axios.get('/api/entry/' + this.state.id).then(res => {
       this.setState({
         id : res.data.id,
         title: res.data.title,
@@ -59,7 +59,7 @@ class Entry extends Component {
   }
 
   handleDelete() {
-    axios.get('/delete/' + this.state.id).then(res => {
+    axios.get('/api/delete/' + this.state.id).then(res => {
       if ('error' in res.data) {
         this.setState({
           status: res.data.error
