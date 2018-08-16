@@ -1,6 +1,7 @@
 import React, {
   Component
 } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import axios from 'axios';
 
@@ -82,7 +83,7 @@ class Entry extends Component {
   renderItem(title, value, def) {
     if (value !== def && value !== null) {
       return (
-        <dd className="col-sm-9">{value}</dd>
+        <dd className="col-sm-9"><ReactMarkdown source={value} /></dd>
       );
     } else {
       return (<div />);
@@ -206,7 +207,7 @@ class Entry extends Component {
               <h2 className="card-title">{this.state.title}</h2>
               <p className="text-muted">{this.state.author.map(author=>{return (<a className='text-muted mx-1' href={"/people/" + author} key={this.state.author.indexOf(author)}>{author}</a>)})}</p>
               <div className="container">
-                {this.state.description}
+                <ReactMarkdown source={this.state.description} />
                 {this.renderData()}
                 {this.renderOptions()}
               </div>
