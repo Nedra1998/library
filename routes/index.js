@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var path = require('path');
 
 var Entry = require('../models/entry.js');
 
@@ -22,29 +23,40 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/all', function(req, res, next) {
+  var sort = (req.query.sort ? req.query.sort : 'title')
   Entry.getAll(null, (err, entries) => {
     if (err) return console.log(err)
-    if (req.user) return res.json(entries.map(Entry.serialize));
-    else return res.json(entries.map(Entry.safeSerialize));
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return ((a[sort] < b[sort]) ? -1 : (a[sort] > b[sort]) ? 1 : 0);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a, b) => {
+      return ((a[sort] < b[sort]) ? -1 : (a[sort] > b[sort]) ? 1 : 0);
+    }));
   });
 });
 
 router.get('/index', function(req, res, next) {
   Entry.getTitles(null, (err, entries) => {
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries);
   });
 });
+router.get('/dates', (req, res, next) => {
+  Entry.getDates(null, (err, entries) => {
+    if(err) return console.log(err);
+    res.json(entries);
+  })
+})
 router.get('/authors', (req, res, next) => {
   Entry.getAuthors(null, (err, entries) => {
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries);
   });
 });
 router.get('/owners', (req, res, next) => {
   Entry.getOwners(null, (err, entries) => {
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries);
   });
 });
 
@@ -66,8 +78,23 @@ router.get('/search', (req, res, next) => {
 router.get('/letter/:letter', (req, res, next) => {
   Entry.getLetter(req.params.letter, null, (err, entries) => {
     if(err) return console.log(err);
-    if (req.user) return res.json(entries.map(Entry.serialize));
-    else return res.json(entries.map(Entry.safeSerialize));
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return ((a['title'] < b['title']) ? -1 : (a['title'] > b['title']) ? 1 : 0);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a, b) => {
+      return ((a['title'] < b['title']) ? -1 : (a['title'] > b['title']) ? 1 : 0);
+    }));
+  });
+});
+router.get('/date/:year', (req, res, next) => {
+  Entry.getYear(req.params.year, null, (err, entries) => {
+    if(err) return console.log(err);
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return (a['date'] < b['date']);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a,b) => {
+      return (a['date'] < b['date']);
+    }));
   });
 });
 
@@ -127,6 +154,65 @@ router.post('/', (req, res, next) => {
   }, (err, entry) => {
     if (err) return console.log(err);
     res.json(Entry.serialize(entry));
+    if (req.files) {
+      var files = []
+      var dir = appRoot + `/public/images/${entry._id}_`;
+      for(var key in req.files){
+        var name = req.files[key].md5 + '.' + req.files[key].mimetype.split('/')[1];
+        files.push(dir + name);
+        req.files[key].mv(dir + name, (err) => {
+          if(err) return console.log(err);
+        });
+      }
+      Entry.update({id: entry._id}, {files: files}, (err, raw) =>{
+        if(err) return console.log(err);
+      });
+    }
+  });
+});
+
+router.post('/modify/:id', (req, res, next) => {
+  if(!req.user) return res.json({'error': 'Must be logged in to create entry'});
+  var owners = [];
+  var ownersDescriptions = [];
+  if (req.body.owners && req.body.owners.length !== 0) {
+    owners = JSON.parse(req.body.owners).map(entry => {
+      return entry.name
+    });
+    ownersDescriptions = JSON.parse(req.body.owners).map(entry => {
+      return entry.description
+    });
+  }
+  var data = req.body
+  data['owners'] =  owners;
+  data['ownersDescriptions'] =  ownersDescriptions;
+  Entry.findByIdAndUpdate(req.params.id, data, (err, raw) => {
+    if(err) return console.log(err);
+    res.json(raw);
+    if (req.files) {
+      var files = []
+      var dir = appRoot + `/public/images/${req.params.id}_`;
+      for(var key in req.files){
+        var name = req.files[key].md5 + '.' + req.files[key].mimetype.split('/')[1];
+        files.push(dir + name);
+        req.files[key].mv(dir + name, (err) => {
+          if(err) return console.log(err);
+        });
+      }
+      Entry.findByIdAndUpdate(req.params.id, {$set:{files: files}}, (err, raw) => {
+        console.log(err, raw);
+      });
+    }
+  })
+});
+
+router.post('/upload', (req, res, next) => {
+  let imgFile = req.files.file;
+  let dest = req.body.dest;
+  imageFile.mv(`${__dirname}/../public/${req.body.dest}`, (err) => {
+    if(err){return console.log(err)
+      return res.status(500).send(err);}
+    res.json({file: `public/${req.body.dest}`});
   });
 });
 

@@ -23,10 +23,10 @@ class Person extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
-    axios.get('/name/' + this.state.name).then(res => {
+    axios.get('/api/name/' + this.state.name).then(res => {
       this.setState(res.data);
     });
   }

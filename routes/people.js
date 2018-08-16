@@ -18,14 +18,21 @@ var toTitle = (string) => {
 router.get('/all', function(req, res, next) {
   Entry.getPeople(null, (err, people) => {
     if (err) return console.log(err);
-    res.json(toTitle(people).sort());
+    res.json(people.sort());
+  });
+});
+
+router.get('/index', (req, res, next) => {
+  Entry.getPeople(null, (err, people) => {
+    if(err) return console.log(err);
+    res.json(people.sort());
   });
 });
 
 router.get('/search', (req, res, next) => {
   var callback = (err, results) => {
     if (err) return console.log(err);
-    res.json(toTitle(results));
+    res.json(results);
   }
   if (req.query.query) Entry.findPerson(req.query.query, null, req.user, callback);
   else res.json({
@@ -39,7 +46,7 @@ router.get('/letter/:letter', (req, res, next) => {
     Entry.getOwners(null, (err, owners) => {
       if (err) return console.log(err);
       const people = [];
-      toTitle(authors.concat(owners)).sort().forEach((person) => {
+      authors.concat(owners).sort().forEach((person) => {
         if (person[0] === req.params.letter.toUpperCase()) {
           people.push(person);
         }

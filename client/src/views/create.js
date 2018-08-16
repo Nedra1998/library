@@ -24,7 +24,7 @@ class Create extends Component {
       source: '',
       type: 'BOOK',
       status: '',
-      currency: '$'
+      currency: '$',
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -50,31 +50,43 @@ class Create extends Component {
   }
 
   componentDidMount() {
-    axios.get('/users/loggedin').then(res => {
+    axios.get('/api/users/loggedin').then(res => {
       this.setState(res.data);
     });
   }
 
-  handleSubmit() {
-    this.convert(this.state.cost, this.state.currency, () => {
-      axios.post('/', this.state).then(res => {
+  handleSubmit(ev) {
+    ev.preventDefault();
+    this.convert(this.state.cost, this.state.currency, this.state.acquired, () => {
+      var formData = new FormData();
+      const files = [...this.uploadImage.files];
+      files.forEach((file, id) => {
+        formData.append(id, files[id]);
+      });
+      for (var key in this.state){
+        formData.append(key, this.state[key]);
+      }
+      axios.post('/api/', formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
         if('error' in res.data) this.setState({status: res.data.error});
         else this.setState({ loggedIn: false, title: '', authors: [''], publisher: '', printer: '', date: '0001-01-01', description: '', owners: [], cost: 0, acquired: '0001-01-01', source: '', type: 'BOOK', status: 'SUCCESS' });
       });
     });
   }
 
-  convert(value, currency, callback){
+  convert(value, currency, date, callback){
+    if (!date || date === '0001-01-01'){
+      date = 'latest';
+    }
     if (currency === '$'){
       callback(value);
     }else if(currency === '€'){
-      axios.get('http://free.currencyconverterapi.com/api/v5/convert?q=EUR_USD&compact=y').then(res => {
-        value = parseFloat(value) * parseFloat(res.data['EUR_USD'].val)
+      axios.get('http://data.fixer.io/api/'+date+'?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
+        value = parseFloat(value) * parseFloat(res.data['rates']['USD'])
         this.setState({cost: Math.round(value)}, callback);
       });
     }else if(currency === '£'){
-      axios.get('http://free.currencyconverterapi.com/api/v5/convert?q=GBP_USD&compact=y').then(res => {
-        value = parseFloat(value) * parseFloat(res.data['GBP_USD'].val)
+      axios.get('http://data.fixer.io/api/'+date+'?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
+        value = parseFloat(value) * parseFloat(res.data['rates']['USD'])
         this.setState({cost: Math.round(value)}, callback);
       });
     }else{
@@ -136,7 +148,7 @@ class Create extends Component {
       return {...owner, name:evt.target.value};
     });
     this.setState({
-      owners:newOwners 
+      owners:newOwners
     });
   }
   handleOwnerDescriptionChange = (idx) => (evt) => {
@@ -145,7 +157,7 @@ class Create extends Component {
       return {...owner, description:evt.target.value};
     });
     this.setState({
-      owners:newOwners 
+      owners:newOwners
     });
   }
 
@@ -196,7 +208,7 @@ class Create extends Component {
     }
     const authors = this.state.authors.map((author, idx) => {
       return (
-        <div className="form-row">
+        <div className="form-row" key={this.state.authors.indexOf(author)}>
           <div className="col">
             <input className="form-control" placeholder={`Author #${idx+1}`} value={author} onChange={this.handleAuthorChange(idx)} />
           </div>
@@ -228,34 +240,34 @@ class Create extends Component {
           <form onSubmit={this.handleSubmit} action='#'>
             <h1 className="h3 mb-3 font-width-normal">Create New Entry</h1>
             {labeler("Title", <input className="form-control" placeholder="Title" id="title" aria-label="Name" onChange={this.handleName} value={this.state.title}/>)}
-            {labeler("Authors", 
-            <div className="form-group">
-              {authors}
-              <div className="p-2">
-                <button id="add-author" className="btn btn-outline-success" type="button" onClick={this.handleAuthorAdd}>Add Author</button>
+            {labeler("Authors",
+              <div className="form-group">
+                {authors}
+                <div className="p-2">
+                  <button id="add-author" className="btn btn-outline-success" type="button" onClick={this.handleAuthorAdd}>Add Author</button>
+                </div>
               </div>
-            </div>
             )}
             {labeler("Publisher", <input className="form-control" placeholder="Publisher" onChange={this.handlePublisher} value={this.state.publisher}/>)}
             {labeler("Date", <input className="form-control" type="date" id="date" onChange={this.handleDate} value={this.state.date}/>)}
             {labeler("Printer", <input className="form-control" placeholder="Printer" onChange={this.handlePrinter} value={this.state.printer}/>)}
             {labeler("Description", <textarea className="form-control" placeholder="Description" onChange={this.handleDescription} value={this.state.description}/>)}
-            {labeler("Owners", 
-            <div className="form-group">
-              {owners}
-              <div className="p-2">
-                <button id="add-owner" className="btn btn-outline-success" type="button" onClick={this.handleOwnerAdd}>Add Owner</button>
+            {labeler("Owners",
+              <div className="form-group">
+                {owners}
+                <div className="p-2">
+                  <button id="add-owner" className="btn btn-outline-success" type="button" onClick={this.handleOwnerAdd}>Add Owner</button>
+                </div>
               </div>
-            </div>
             )}
             {labeler("Source", <input className="form-control" placeholder="Source" onChange={this.handleSource} value={this.state.source}/>)}
             {labeler("Acquired", <input className="form-control" type="date" onChange={this.handleAcquired} value={this.state.acquired}/>)}
             <div className="form-group row">
               <label className="col-sm-2 col-form-label">Cost</label>
               <div className="input-group col-sm-10">
-                <div class="input-group-prepend">
-                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{this.state.currency}</button>
-                  <div class="dropdown-menu">
+                <div className="input-group-prepend">
+                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{this.state.currency}</button>
+                  <div className="dropdown-menu">
                     <button type="button" className="dropdown-item" onClick={this.setCurrency('$')}>$</button>
                     <button type="button" className="dropdown-item" onClick={this.setCurrency("£")}>&pound;</button>
                     <button type="button" className="dropdown-item" onClick={this.setCurrency("€")}>&euro;</button>
@@ -264,10 +276,11 @@ class Create extends Component {
                 <input className="form-control currency" type="number" data-number-to-fixed="2" data-number-stepfactor="100" onChange={this.handleCost} value={this.state.cost}/>
               </div>
             </div>
-            {labeler("Type", <select class="form-control" onChange={this.handleTypeChange} >
+            {labeler("Type", <select className="form-control" onChange={this.handleTypeChange} >
               <option>BOOK</option>
             </select>)}
-            <button className="btn btn-outline-primary btn-lg btn-block" type="button" aria-label="Submit" onClick={this.handleSubmit}>Submit</button>
+            {labeler("Images", <input type="file" className="form-control-file" id="images" ref={(ref) => {this.uploadImage = ref; }} multiple/>)}
+            <button className="btn btn-outline-primary btn-lg btn-block" aria-label="Submit">Submit</button>
           </form>
           {this.renderStatus()}
         </div>

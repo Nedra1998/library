@@ -20,7 +20,7 @@ class Login extends Component {
   }
 
   handleLogin(){
-    axios.post('/users/login', this.state).then(res => {
+    axios.post('/api/users/login', this.state).then(res => {
       this.setState({'status': 'SUCCESS'});
       this.props.history.push('/');
     }).catch(err => {

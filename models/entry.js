@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Fuse = require('fuse.js');
+var path = require('path');
 
 var entrySchema = mongoose.Schema({
   title: String,
@@ -14,24 +15,26 @@ var entrySchema = mongoose.Schema({
   acquired: Date,
   source: String,
   type: String,
+  files: [String]
 });
 
 var Entry = module.exports = mongoose.model('Entry', entrySchema);
 
 module.exports.createEntry = (entry, callback) => {
   var newEntry = new Entry({
-    title: entry.title ? entry.title.toLowerCase() : '',
-    author: entry.author ? entry.author.join('|').toLowerCase().split('|') : [],
-    publisher: entry.publisher ? entry.publisher.toLowerCase() : '',
-    printer: entry.printer ? entry.printer.toLowerCase() : '',
+    title: entry.title ? entry.title : '',
+    author: entry.author ? entry.author : [],
+    publisher: entry.publisher ? entry.publisher : '',
+    printer: entry.printer ? entry.printer : '',
     date: entry.date ? new Date(entry.date) : new Date(0),
     description: entry.description ? entry.description : '',
-    owners: entry.owners.length != 0 ? entry.owners.join('|').toLowerCase().split('|') : [],
+    owners: entry.owners.length != 0 ? entry.owners : [],
     ownersDescriptions: entry.ownersDescriptions != [] ? entry.ownersDescriptions : [],
     cost: entry.cost ? entry.cost : 0,
     acquired: entry.acquired ? new Date(entry.acquired) : new Date(0),
     source: entry.source ? entry.source : '',
-    type: entry.type ? entry.type : 'BOOK'
+    type: entry.type ? entry.type : 'BOOK',
+    files: []
   });
   newEntry.save();
   callback(null, newEntry);
@@ -44,71 +47,87 @@ module.exports.getBooks = (callback) => {
 }
 
 
-module.exports.get = (title, type, callback) => {
+module.exports.get = (id, type, callback) => {
   Entry.findOne(type ? {
-    title: title.toLowerCase(),
+    _id: id,
     type: type
   } : {
-    title: title.toLowerCase()
+    _id: id,
   }, callback);
 }
 
-module.exports.deleteEntry = (title, type, callback) => {
+module.exports.deleteEntry = (id, type, callback) => {
   Entry.findOne(type ? {
-    title: title.toLowerCase(),
+    _id: id,
     type: type
   } : {
-    title: title.toLowerCase()
+    _id: id,
   }).remove(callback);
 }
 
 module.exports.getLetter = (letter, type, callback) => {
+  escape = (text) => {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  }
   var query;
   if (type) query = {
-    title: new RegExp('^' + letter.toLowerCase(), 'i'),
+    title: new RegExp('^' + escape(letter.toLowerCase()), 'i'),
     type: type
   };
   else query = {
-    title: new RegExp('^' + letter.toLowerCase(), 'i')
+    title: new RegExp('^' + escape(letter.toLowerCase()), 'i')
   };
   Entry.find(query, callback);
+}
+module.exports.getYear = (year, type, callback) => {
+  Entry.find((type ? {type: type} : {}), (err, entries) => {
+    if(err) return callback(err);
+    var matches = [];
+    var match = parseInt(year);
+    entries.forEach(entry => {
+      if((Math.floor(parseInt(entry.date.toISOString().substr(0,4)) / 100) * 100) === match){
+        matches.push(entry);
+      }
+    });
+    callback(null, matches);
+  });
 }
 module.exports.getAll = (type, callback) => Entry.find((type ? {
   type: type
 } : {}), callback);
 module.exports.getTitle = (title, callback) => {
   Entry.find({
-    title: title.toLowerCase()
+    title: new RegExp("^" + title.toLowerCase(), "i"),
   }, callback);
 }
 module.exports.getAuthor = (author, callback) => {
   Entry.find({
-    author: author.toLowerCase()
+    author: new RegExp("^" + author.toLowerCase(), "i"),
   }, callback);
 }
 module.exports.getPublisher = (publisher, callback) => {
   Entry.find({
-    publisher: publisher.toLowerCase()
+    publisher: new RegExp("^" + publisher.toLowerCase(), "i"),
   }, callback);
 }
 module.exports.getPrinter = (printer, callback) => {
   Entry.find({
-    printer: printer.toLowerCase()
+    printer: new RegExp("^" + printer.toLowerCase(), "i"),
   }, callback);
 }
 module.exports.getOwner = (name, callback) => {
   Entry.find({
-    owners: name.toLowerCase()
+    owners: new RegExp("^" + owners.toLowerCase(), "i"),
   }, callback);
 }
 
 module.exports.getName = (name, loggedin, callback) => {
   Entry.find({
-    author: name.toLowerCase()
+    author: new RegExp("^" + name.toLowerCase() + "$", "i"),
   }, (err, authored) => {
     if (err) return callback(err);
     Entry.find({
-      owner: name.toLowerCase()
+      owners: new RegExp("^" + name.toLowerCase() + "$", "i"),
     }, (err, owned) => {
       if (err) return callback(err);
       callback(null, {
@@ -131,6 +150,18 @@ module.exports.getTitles = (type, callback) => {
     callback(null, titles);
   });
 }
+module.exports.getDates = (type, callback) => {
+  Entry.find(type ? {
+    type: type
+  } : {}, (err, entries) => {
+    if (err) return callback(err);
+    var dates = []
+    for (var key in entries) {
+      dates.push(entries[key].date);
+    }
+    callback(null, dates);
+  });
+}
 module.exports.getAuthors = (type, callback) => {
   Entry.find(type ? {
     type: type
@@ -150,7 +181,7 @@ module.exports.getOwners = (type, callback) => {
     if (err) return callback(err);
     var owners = new Set([]);
     for (var key in entries) {
-      entries[key].owners.forEach(name => owners.add(name.name));
+      entries[key].owners.forEach(name => owners.add(name));
     }
     callback(null, Array.from(owners));
   });
@@ -164,7 +195,7 @@ module.exports.getPeople = (type, callback) => {
     var people = new Set([]);
     for (var key in entries){
       entries[key].author.forEach(name => people.add(name));
-      entries[key].owners.forEach(owner => people.add(owner.name));
+      entries[key].owners.forEach(owner => people.add(owner));
     }
     callback(null, Array.from(people));
   });
@@ -311,43 +342,41 @@ module.exports.findOwner = (query, type, loggedin, callback) => {
 }
 
 module.exports.serialize = (entry) => {
-  var zip = rows => rows[0].map((_, c) => rows.map(row => row[c]));
-  var owners = []
+  var zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
+  var owners = [];
   if (entry.owners.length != 0) {
-    owners = zip([entry.owners, entry.ownersDescription]).map(pair => {
+    owners = zip([entry.owners, entry.ownersDescriptions]).map(pair => {
       return {
         'name': pair[0],
         'description': pair[1]
       };
     });
   }
-  var toTitle = (string) => {
-    if (string == '') return '';
-    return string.split(' ').map(word => {
-      return word.replace(word[0], word[0].toUpperCase());
-    }).join(' ');
-  };
   return {
-    title: toTitle(entry.title),
+    id: entry._id,
+    title: entry.title,
     author: entry.author ? entry.author.map(auth => {
-      return toTitle(auth);
+      return auth;
     }) : [],
-    publisher: toTitle(entry.publisher),
-    printer: toTitle(entry.printer),
+    publisher: entry.publisher,
+    printer: entry.printer,
     date: new Date(entry.date).toISOString(),
     description: entry.description,
     owners: owners,
     cost: entry.cost,
     acquired: new Date(entry.acquired).toISOString(),
     source: entry.source,
-    type: entry.type
+    type: entry.type,
+    files: entry.files.map((file) => {
+      return path.relative(appRoot + '/public', file);
+    })
   };
 }
 module.exports.safeSerialize = (entry) => {
   var zip = rows => rows[0].map((_, c) => rows.map(row => row[c]));
   var owners = []
   if (entry.owners.length != 0) {
-    owners = zip([entry.owners, entry.ownersDescription]).map(pair => {
+    owners = zip([entry.owners, entry.ownersDescriptions]).map(pair => {
       return {
         'name': pair[0],
         'description': pair[1]
@@ -361,15 +390,19 @@ module.exports.safeSerialize = (entry) => {
     }).join(' ');
   };
   return {
-    title: toTitle(entry.title),
+    id: entry._id,
+    title: entry.title,
     author: entry.author ? entry.author.map(auth => {
-      return toTitle(auth);
+      return auth;
     }) : [],
-    publisher: toTitle(entry.publisher),
-    printer: toTitle(entry.printer),
+    publisher: entry.publisher,
+    printer: entry.printer,
     date: new Date(entry.date).toISOString(),
     description: entry.description,
     owners: owners,
-    type: entry.type
+    type: entry.type,
+    files: entry.files.map((file) => {
+      return path.relative(appRoot + '/public', file);
+    })
   };
 }
