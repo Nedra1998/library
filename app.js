@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 
 var session = require('cookie-session');
 var passport = require('passport');
+var fileUpload = require('express-fileupload');
 
 var indexRouter = require('./routes/index');
 var peopleRouter = require('./routes/people');
@@ -19,7 +20,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(fileUpload());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/images')));
 
 app.use(session({name:'session', secret: 'collectiondb', resave: false, saveUninitialized:true}));
 
@@ -36,5 +39,7 @@ app.use('/', indexRouter);
 app.use('/people', peopleRouter);
 app.use('/book', bookRouter);
 app.use('/users', usersRouter);
+
+global.appRoot = path.resolve(__dirname);
 
 module.exports = app;

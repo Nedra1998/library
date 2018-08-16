@@ -6,13 +6,15 @@ import axios from 'axios';
 
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
+import Gallery from '../components/gallery.js';
 
 class Entry extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loggedIn: false,
-      title: this.props.match.params.title,
+      title: '',
+      id: this.props.match.params.title,
       author: [],
       cost: 0,
       acquired: null,
@@ -23,7 +25,8 @@ class Entry extends Component {
       publisher: '',
       source: '',
       type: 'NONE',
-      status: ''
+      status: '',
+      files: []
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.renderData = this.renderData.bind(this);
@@ -36,8 +39,9 @@ class Entry extends Component {
     axios.get('/users/loggedin').then(res => {
       this.setState(res.data);
     });
-    axios.get('/entry/' + this.state.title).then(res => {
+    axios.get('/entry/' + this.state.id).then(res => {
       this.setState({
+        id : res.data.id,
         title: res.data.title,
         author: res.data.author,
         cost: (res.data.cost ? res.data.cost : null),
@@ -48,13 +52,14 @@ class Entry extends Component {
         printer: res.data.printer,
         publisher: res.data.publisher,
         source: (res.data.source ? res.data.source : null),
-        type: res.data.type
+        type: res.data.type,
+        files: res.data.files
       });
     });
   }
 
   handleDelete() {
-    axios.get('/delete/' + this.state.title).then(res => {
+    axios.get('/delete/' + this.state.id).then(res => {
       if ('error' in res.data) {
         this.setState({
           status: res.data.error
@@ -68,7 +73,7 @@ class Entry extends Component {
   renderTitle(title, value, def) {
     if (value !== def && value !== null) {
       return (
-        <dt className="col-sm-2">{title}</dt>
+        <dt className="col-sm-3">{title}</dt>
       );
     } else {
       return (<div />);
@@ -77,7 +82,7 @@ class Entry extends Component {
   renderItem(title, value, def) {
     if (value !== def && value !== null) {
       return (
-        <dd className="col-sm-10">{value}</dd>
+        <dd className="col-sm-9">{value}</dd>
       );
     } else {
       return (<div />);
@@ -88,16 +93,39 @@ class Entry extends Component {
     if (authors.length === 0) {
       return (<div />);
     } else if (authors.length === 1) {
-      return (<dt className="col-sm-2">Author</dt>);
+      return (<dt className="col-sm-3">Author</dt>);
     } else {
-      return (<dt className="col-sm-2">Authors</dt>);
+      return (<dt className="col-sm-3">Authors</dt>);
     }
   }
   renderAuthors(authors) {
     if (authors.length === 0) {
       return (<div />);
     } else {
-      return (<dd className="col-sm-10">{authors.map(author => {return (<a className="text-primary mx-1" href={'/people/' + author}>{author}</a>)})}</dd>);
+      return (<dd className="col-sm-9">{authors.map(author => {return (<a className="text-primary mx-1" href={'/people/' + author} key={authors.indexOf(author)}>{author}</a>)})}</dd>);
+    }
+  }
+
+  renderOwnerTitle(owners) {
+    if (owners.length === 0) {
+      return (<div />);
+    } else if (owners.length === 1) {
+      return (<dt className="col-sm-3">Owner</dt>);
+    } else {
+      return (<dt className="col-sm-3">Owners</dt>);
+    }
+  }
+  renderOwners(owners) {
+    if(owners.length === 0){
+      return (<div />);
+    }else{
+      return(
+        <dd className="col-sm-9">
+          <dl className="row">
+            {owners.map((owner, idx) => <React.Fragment key={idx}><dt className="col-sm-3"><a className="text-primary mx-1" href={'/people/' + owner.name}>{owner.name}</a></dt><dd className="col-sm-9">{owner.description}</dd></React.Fragment>)}
+          </dl>
+        </dd>
+      );
     }
   }
 
@@ -105,14 +133,14 @@ class Entry extends Component {
     if (date === null || date.toISOString() === new Date("0001-01-01").toISOString()) {
       return (<div />);
     } else {
-      return (<dt className="col-sm-2">{type}</dt>);
+      return (<dt className="col-sm-3">{type}</dt>);
     }
   }
   renderDate(type, date) {
     if (date === null || date.toISOString() === new Date("0001-01-01").toISOString()) {
       return (<div />);
     } else {
-      return (<dd className="col-sm-10">{date.toGMTString().slice(0, -13)}</dd>);
+      return (<dd className="col-sm-9">{date.toGMTString().slice(0, -13)}</dd>);
     }
   }
 
@@ -131,7 +159,8 @@ class Entry extends Component {
         {this.renderItem("Description", this.state.description, '')}
         {this.renderTitle("Printer", this.state.printer, '')}
         {this.renderItem("Printer", this.state.printer, '')}
-        {/* {this.renderOwners(this.state.owners)} */}
+        {this.renderOwnerTitle(this.state.owners)}
+        {this.renderOwners(this.state.owners)}
         {this.renderTitle("Source", this.state.source, '')}
         {this.renderItem("Source", this.state.source, '')}
         {this.renderDateTitle("Acquired", this.state.acquired)}
@@ -149,7 +178,7 @@ class Entry extends Component {
       return (
         <div>
           <button type="button" className="btn btn-outline-danger col-sm-2 mx-1" onClick={this.handleDelete}>Delete</button>
-          <a className="btn btn-outline-warning col-sm-2 mx-1" href={"/modify/" + this.state.title}>Modify</a>
+          <a className="btn btn-outline-warning col-sm-2 mx-1" href={"/modify/" + this.state.id}>Modify</a>
         </div>
       );
     } else {
@@ -175,12 +204,13 @@ class Entry extends Component {
           <div className="card">
             <div className="card-body">
               <h2 className="card-title">{this.state.title}</h2>
-              <p className="text-muted">{this.state.author.map(author=>{return (<a className='text-muted mx-1' href={"/people/" + author}>{author}</a>)})}</p>
+              <p className="text-muted">{this.state.author.map(author=>{return (<a className='text-muted mx-1' href={"/people/" + author} key={this.state.author.indexOf(author)}>{author}</a>)})}</p>
               <div className="container">
                 {this.state.description}
                 {this.renderData()}
                 {this.renderOptions()}
               </div>
+              <Gallery files={this.state.files} />
             </div>
           </div>
           {this.renderStatus()}

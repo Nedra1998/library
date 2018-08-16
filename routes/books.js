@@ -50,36 +50,62 @@ router.post('/', (req, res, next) => {
 });
 
 router.get('/all', function(req, res, next) {
+  var sort = (req.query.sort ? req.query.sort : 'title')
   Entry.getAll('BOOK', (err, entries) => {
     if (err) return console.log(err)
-    if (req.user) return res.json(entries.map(Entry.serialize));
-    else return res.json(entries.map(Entry.safeSerialize));
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return ((a[sort] < b[sort]) ? -1 : (a[sort] > b[sort]) ? 1 : 0);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a, b) => {
+      return ((a[sort] < b[sort]) ? -1 : (a[sort] > b[sort]) ? 1 : 0);
+    }));
   });
 });
 router.get('/index', function(req, res, next) {
   Entry.getTitles( 'BOOK', (err, entries) => {
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries.sort());
   });
 });
+router.get('/dates', (req, res, next) => {
+  Entry.getDates('BOOK', (err, entries) => {
+    if(err) return console.log(err);
+    res.json(entries);
+  })
+})
 router.get('/letter/:letter', (req, res, next) => {
   Entry.getLetter(req.params.letter, 'BOOK', (err, entries) => {
     if(err) return console.log(err);
-    if (req.user) return res.json(entries.map(Entry.serialize));
-    else return res.json(entries.map(Entry.safeSerialize));
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return ((a['title'] < b['title']) ? -1 : (a['title'] > b['title']) ? 1 : 0);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a, b) => {
+      return ((a['title'] < b['title']) ? -1 : (a['title'] > b['title']) ? 1 : 0);
+    }));
+  });
+});
+router.get('/date/:year', (req, res, next) => {
+  Entry.getYear(req.params.year, 'BOOK', (err, entries) => {
+    if(err) return console.log(err);
+    if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
+      return (a['date'] < b['date']);
+    }));
+    else return res.json(entries.map(Entry.safeSerialize).sort((a,b) => {
+      return (a['date'] < b['date']);
+    }));
   });
 });
 router.get('/authors', (req, res, next) => {
   Entry.getAuthors('BOOK', (err, entries) => {
     console.log(entries);
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries);
   });
 });
 router.get('/owners', (req, res, next) => {
   Entry.getOwners('BOOK', (err, entries) => {
     if (err) return console.log(err);
-    res.json(toTitle(entries));
+    res.json(entries);
   });
 });
 
