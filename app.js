@@ -42,7 +42,6 @@ app.use('/api/book', bookRouter);
 app.use('/api/users', usersRouter);
 app.use('/api', indexRouter);
 app.get('*', function(req, res){
-  res.json({"HI": "HELLO"});
   res.sendFile(path.join(__dirname, 'client/build/index.html'));
 })
 
