@@ -29,7 +29,9 @@ def main():
                     item['author'] = l[1]
                 item['title'] = l[2]
                 item['date'] = parse(l[3].split(' ')[0].split('-')[0].rstrip('?')).strftime("%Y-%m-%d") if l[3] else ''
-                item['description'] = l[6] + '. ' + l[7]
+                item['reference'] = l[5]
+                item['description'] = l[7]
+                item['binding'] = l[6]
                 try:
                     item['acquired'] = parse(l[9].split(' ')[0]).strftime("%Y-%m-%d")
                     item['source'] = ' '.join(l[9].split(' ')[1:])
@@ -46,7 +48,9 @@ def main():
                     entries.append(item)
     for entry in entries:
         print("Uploading {}...".format(entry['title']))
-        res = requests.post('http://localhost:3001/book/', entry)
+        if 'cost' in entry and entry['cost'] == 1000.0:
+            pprint(entry)
+            res = requests.post('https://rasmussen-collection.herokuapp.com/api/book/', entry)
 
 
 if __name__ == "__main__":
