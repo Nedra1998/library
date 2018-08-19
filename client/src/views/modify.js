@@ -38,6 +38,10 @@ class Modify extends Component {
       type: 'BOOK',
       status: '',
       currency: '$',
+      appraisalValue: 0,
+      appraisalCurrency: '$',
+      reference: '',
+      transcription: '',
       id: null,
       rates: null
     };
@@ -62,6 +66,10 @@ class Modify extends Component {
     this.renderStatus = this.renderStatus.bind(this);
     this.setCurrency = this.setCurrency.bind(this);
     this.convert = this.convert.bind(this);
+    this.handleAppraisal = this.handleAppraisal.bind(this);
+    this.handleReference = this.handleReference.bind(this);
+    this.handleTranscription = this.handleTranscription.bind(this);
+    this.setAppraisal = this.setAppraisal.bind(this);
   }
 
   componentDidMount() {
@@ -80,6 +88,9 @@ class Modify extends Component {
         printer: res.data.printer,
         publisher: res.data.publisher,
         source: (res.data.source ? res.data.source : ''),
+        titleTranscription: res.data.titleTranscription,
+        reference: res.data.reference,
+        appraisalValue: (res.data.appraisalValue ? res.data.appraisalValue : 0),
         type: res.data.type,
         id: res.data.id
       });
@@ -87,74 +98,138 @@ class Modify extends Component {
   }
 
   handleSubmit() {
-    this.convert(this.state.cost, this.state.currency, this.state.acquired, () => {
-      var formData = new FormData();
-      const files = [...this.uploadImage.files];
-      files.forEach((file, id) => {
-        formData.append(id, files[id]);
-      });
-      for (var key in this.state){
-        if(key === 'owners'){
-          formData.append(key, JSON.stringify(this.state[key]));
-        }else{
-          formData.append(key, this.state[key]);
+    this.convert(this.state.cost, this.state.currency, this.state.acquired, false, () => {
+      this.convert(this.state.appraisalValue, this.state.appraisalCurrency, null, true, () => {
+        var formData = new FormData();
+        const files = [...this.uploadImage.files];
+        files.forEach((file, id) => {
+          formData.append(id, files[id]);
+        });
+        for (var key in this.state) {
+          if (key === 'owners') {
+            formData.append(key, JSON.stringify(this.state[key]));
+          } else {
+            formData.append(key, this.state[key]);
+          }
         }
-      }
-      axios.post('/api/modify/' + this.state.id, formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
-        if('error' in res.data) this.setState({status: res.data.error});
-        else this.setState({status: 'SUCCESS'});
+        axios.post('/api/modify/' + this.state.id, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(res => {
+          if ('error' in res.data) this.setState({
+            status: res.data.error
+          });
+          else this.setState({
+            status: 'SUCCESS'
+          });
+        });
       });
     });
   }
 
-  convert(value, currency, date, callback){
-    if (!date || date === '0001-01-01'){
+  convert(value, currency, date, tf, callback) {
+    if (!date || date === '0001-01-01' || date === null) {
       date = 'latest';
     }
-    if (currency === '$'){
+    if (currency === '$') {
       callback(value);
-    }else if(currency === '€'){
-      axios.get('http://data.fixer.io/api/'+date+'?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
+    } else if (currency === '€') {
+      axios.get('http://data.fixer.io/api/' + date + '?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
         value = parseFloat(value) * parseFloat(res.data['rates']['USD'])
-        this.setState({cost: Math.round(value)}, callback);
+        if (tf === false) {
+          this.setState({
+            cost: Math.round(value)
+          }, callback);
+        } else {
+          this.setState({
+            appraisalValue: Math.round(value)
+          }, callback);
+        }
       });
-    }else if(currency === '£'){
-      axios.get('http://data.fixer.io/api/'+date+'?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
+    } else if (currency === '£') {
+      axios.get('http://data.fixer.io/api/' + date + '?access_key=ca7f16514bdc7b89d06fe9684fe3e541&base=EUR&symbols=USD').then(res => {
         value = parseFloat(value) * parseFloat(res.data['rates']['USD'])
-        this.setState({cost: Math.round(value)}, callback);
+        if (tf === false) {
+          this.setState({
+            cost: Math.round(value)
+          }, callback);
+        } else {
+          this.setState({
+            appraisalValue: Math.round(value)
+          }, callback);
+        }
       });
-    }else{
+    } else {
       callback(value);
     }
   }
 
 
   handleName(event) {
-    this.setState({title: event.target.value});
+    this.setState({
+      title: event.target.value
+    });
   }
-  handlePublisher(event){
-    this.setState({publisher: event.target.value});
+  handlePublisher(event) {
+    this.setState({
+      publisher: event.target.value
+    });
   }
-  handlePrinter(event){
-    this.setState({printer: event.target.value});
+  handlePrinter(event) {
+    this.setState({
+      printer: event.target.value
+    });
   }
-  handleSource(event){
-    this.setState({source: event.target.value});
+  handleSource(event) {
+    this.setState({
+      source: event.target.value
+    });
   }
-  handleDescription(event){
-    this.setState({description: event.target.value});
+  handleDescription(event) {
+    this.setState({
+      description: event.target.value
+    });
   }
-  handleCost(event){
-    this.setState({cost: event.target.value});
+  handleCost(event) {
+    this.setState({
+      cost: event.target.value
+    });
   }
-  handleDate(event){
-    this.setState({date: event.target.value});
+  handleDate(event) {
+    this.setState({
+      date: event.target.value
+    });
   }
-  handleAcquired(event){
-    this.setState({acquired: event.target.value});
+  handleAcquired(event) {
+    this.setState({
+      acquired: event.target.value
+    });
   }
-  handleTypeChange(event){
-    this.setState({type: event.target.value});
+  handleTypeChange(event) {
+    this.setState({
+      type: event.target.value
+    });
+  }
+  handleReference(event) {
+    this.setState({
+      reference: event.target.value
+    });
+  }
+  handleTranscription(event) {
+    this.setState({
+      transcription: event.target.value
+    });
+  }
+  handleAppraisal(event) {
+    this.setState({
+      appraisalValue: event.target.value
+    });
+  }
+  setAppraisal = (currency) => () => {
+    this.setState({
+      appraisalCurrency: currency
+    });
   }
 
   handleAuthorChange = (idx) => (evt) => {
@@ -180,25 +255,32 @@ class Modify extends Component {
   handleOwnerNameChange = (idx) => (evt) => {
     const newOwners = this.state.owners.map((owner, id) => {
       if (id !== idx) return owner;
-      return {...owner, name:evt.target.value};
+      return { ...owner,
+        name: evt.target.value
+      };
     });
     this.setState({
-      owners:newOwners
+      owners: newOwners
     });
   }
   handleOwnerDescriptionChange = (idx) => (evt) => {
     const newOwners = this.state.owners.map((owner, id) => {
       if (id !== idx) return owner;
-      return {...owner, description:evt.target.value};
+      return { ...owner,
+        description: evt.target.value
+      };
     });
     this.setState({
-      owners:newOwners
+      owners: newOwners
     });
   }
 
   handleOwnerAdd = () => {
     this.setState({
-      owners: this.state.owners.concat([{'name': '', 'description': ''}])
+      owners: this.state.owners.concat([{
+        'name': '',
+        'description': ''
+      }])
     });
   }
   handleOwnerRemove = (idx) => () => {
@@ -207,22 +289,24 @@ class Modify extends Component {
     });
   }
 
-  setCurrency = (currency) => () =>{
-    this.setState({currency: currency});
+  setCurrency = (currency) => () => {
+    this.setState({
+      currency: currency
+    });
   }
 
 
-  renderStatus(){
-    if(this.state.status === ''){
+  renderStatus() {
+    if (this.state.status === '') {
       return (<div></div>);
-    }else if(this.state.status === 'SUCCESS'){
-      return(
+    } else if (this.state.status === 'SUCCESS') {
+      return (
         <div className="alert alert-success" role="alert">
           Modified entry
         </div>
       );
-    }else{
-      return(
+    } else {
+      return (
         <div className="alert alert-danger" role="alert">
           {this.state.status}
         </div>
@@ -309,6 +393,22 @@ class Modify extends Component {
                   </div>
                 </div>
                 <input className="form-control currency" type="number" data-number-to-fixed="2" data-number-stepfactor="100" onChange={this.handleCost} value={this.state.cost}/>
+              </div>
+            </div>
+            {labeler("Title Transcription", <textarea className="form-control" placeholder="Transcription" onChange={this.handleTranscription} value={this.state.transcription}/>)}
+            {labeler("References", <textarea className="form-control" placeholder="References" onChange={this.handleReference} value={this.state.reference}/>)}
+            <div className="form-group row">
+              <label className="col-sm-2 col-form-label">Appraisal Value</label>
+              <div className="input-group col-sm-10">
+                <div className="input-group-prepend">
+                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{this.state.appraisalCurrency}</button>
+                  <div className="dropdown-menu">
+                    <button type="button" className="dropdown-item" onClick={this.setAppraisal('$')}>$</button>
+                    <button type="button" className="dropdown-item" onClick={this.setAppraisal("£")}>&pound;</button>
+                    <button type="button" className="dropdown-item" onClick={this.setAppraisal("€")}>&euro;</button>
+                  </div>
+                </div>
+                <input className="form-control currency" type="number" data-number-to-fixed="2" data-number-stepfactor="100" onChange={this.handleAppraisal} value={this.state.appraisalValue}/>
               </div>
             </div>
             {labeler("Type", <select className="form-control" onChange={this.handleTypeChange} >

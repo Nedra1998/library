@@ -13,6 +13,9 @@ var entrySchema = mongoose.Schema({
   ownersDescriptions: [String],
   cost: Number,
   acquired: Date,
+  appraisalValue: Number,
+  titleTranscription: String,
+  reference: String,
   source: String,
   type: String,
   files: [String]
@@ -32,6 +35,9 @@ module.exports.createEntry = (entry, callback) => {
     ownersDescriptions: entry.ownersDescriptions != [] ? entry.ownersDescriptions : [],
     cost: entry.cost ? entry.cost : 0,
     acquired: entry.acquired ? new Date(entry.acquired) : new Date(0),
+    appraisalValue: entry.appraisalValue ? entry.appraisalValue : 0,
+    titleTranscription: entry.titleTranscription ? entry.titleTranscription : '',
+    reference: entry.reference ? entry.reference : '',
     source: entry.source ? entry.source : '',
     type: entry.type ? entry.type : 'BOOK',
     files: []
@@ -366,6 +372,9 @@ module.exports.serialize = (entry) => {
     cost: entry.cost,
     acquired: new Date(entry.acquired).toISOString(),
     source: entry.source,
+    appraisalValue: entry.appraisalValue,
+    titleTranscription: entry.titleTranscription,
+    reference: entry.reference,
     type: entry.type,
     files: entry.files.map((file) => {
       return path.relative(appRoot + '/public', file);
@@ -400,6 +409,8 @@ module.exports.safeSerialize = (entry) => {
     date: new Date(entry.date).toISOString(),
     description: entry.description,
     owners: owners,
+    titleTranscription: entry.titleTranscription,
+    reference: entry.reference,
     type: entry.type,
     files: entry.files.map((file) => {
       return path.relative(appRoot + '/public', file);

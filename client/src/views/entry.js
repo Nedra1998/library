@@ -26,6 +26,9 @@ class Entry extends Component {
       publisher: '',
       source: '',
       type: 'NONE',
+      titleTranscription: '',
+      appraisalValue: 0,
+      reference: '',
       status: '',
       files: []
     };
@@ -53,6 +56,9 @@ class Entry extends Component {
         printer: res.data.printer,
         publisher: res.data.publisher,
         source: (res.data.source ? res.data.source : null),
+        titleTranscription: res.data.titleTranscription,
+        reference: res.data.reference,
+        appraisalValue: (res.data.appraisalValue ? res.data.appraisalValue : null),
         type: res.data.type,
         files: res.data.files
       });
@@ -167,7 +173,13 @@ class Entry extends Component {
         {this.renderDateTitle("Acquired", this.state.acquired)}
         {this.renderDate("Acquired", this.state.acquired)}
         {this.renderTitle("Cost", this.state.cost, '0')}
-        {this.renderItem("Cost", (this.state.cost ? '$' + this.state.cost : this.state.cost), '$0')}
+        {this.renderItem("Cost", (this.state.cost ? '$' + this.state.cost.toString() : this.state.cost), '$0')}
+        {this.renderTitle("Title Transcription", this.state.titleTranscription, '')}
+        {this.renderItem("Title Transcription", this.state.titleTranscription, '')}
+        {this.renderTitle("References", this.state.reference, '')}
+        {this.renderItem("References", this.state.reference, '')}
+        {this.renderTitle("Appraisal", this.state.appraisalValue, '0')}
+        {this.renderItem("Appraisal", (this.state.appraisalValue ? '$' + this.state.appraisalValue.toString() : this.state.appraisalValue), '$0')}
         {this.renderTitle("Type", this.state.type, '')}
         {this.renderItem("Type", this.state.type, '')}
       </dl>

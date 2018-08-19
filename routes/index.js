@@ -150,6 +150,9 @@ router.post('/', (req, res, next) => {
     cost: req.body.cost,
     acquired: req.body.acquired,
     source: req.body.source,
+    appraisalValue: req.body.value,
+    titleTranscription: req.body.transcription,
+    reference: req.body.reference,
     type: req.body.type
   }, (err, entry) => {
     if (err) return console.log(err);
