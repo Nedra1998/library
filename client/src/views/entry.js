@@ -21,6 +21,7 @@ class Entry extends Component {
       acquired: null,
       date: null,
       description: '',
+      binding: '',
       owners: [],
       printer: '',
       publisher: '',
@@ -52,6 +53,7 @@ class Entry extends Component {
         acquired: (res.data.acquired ? new Date(res.data.acquired) : null),
         date: (res.data.date ? new Date(res.data.date) : null),
         description: res.data.description,
+        binding: res.data.binding,
         owners: res.data.owners,
         printer: res.data.printer,
         publisher: res.data.publisher,
@@ -164,6 +166,8 @@ class Entry extends Component {
         {this.renderDate("Date", this.state.date)}
         {this.renderTitle("Description", this.state.description, '')}
         {this.renderItem("Description", this.state.description, '')}
+        {this.renderTitle("Binding", this.state.binding, '')}
+        {this.renderItem("Binding", this.state.binding, '')}
         {this.renderTitle("Printer", this.state.printer, '')}
         {this.renderItem("Printer", this.state.printer, '')}
         {this.renderOwnerTitle(this.state.owners)}

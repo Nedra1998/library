@@ -17,6 +17,7 @@ class Create extends Component {
       publisher: '',
       printer: '',
       date: '0001-01-01',
+      binding: '',
       description: '',
       owners: [],
       cost: 0,
@@ -38,6 +39,7 @@ class Create extends Component {
     this.handleSource = this.handleSource.bind(this);
     this.handleReference = this.handleReference.bind(this);
     this.handleTranscription = this.handleTranscription.bind(this);
+    this.handleBinding = this.handleBinding.bind(this);
     this.handleDescription = this.handleDescription.bind(this);
     this.handleCost = this.handleCost.bind(this);
     this.handleAppraisal = this.handleAppraisal.bind(this);
@@ -159,6 +161,9 @@ class Create extends Component {
     this.setState({
       source: event.target.value
     });
+  }
+  handleBinding(event) {
+    this.setState({binding:event.target.value});
   }
   handleDescription(event) {
     this.setState({
@@ -345,6 +350,7 @@ class Create extends Component {
             {labeler("Date", <input className="form-control" type="date" id="date" onChange={this.handleDate} value={this.state.date}/>)}
             {labeler("Printer", <input className="form-control" placeholder="Printer" onChange={this.handlePrinter} value={this.state.printer}/>)}
             {labeler("Description", <textarea className="form-control" placeholder="Description" onChange={this.handleDescription} value={this.state.description}/>)}
+            {labeler("Binding", <textarea className="form-control" placeholder="Binding" onChange={this.handleBinding} value={this.state.binding}/>)}
             {labeler("Owners",
               <div className="form-group">
                 {owners}

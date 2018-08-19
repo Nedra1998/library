@@ -31,6 +31,7 @@ class Modify extends Component {
       printer: '',
       date: '0001-01-01',
       description: '',
+      binding: '',
       owners: [],
       cost: 0,
       acquired: '0001-01-01',
@@ -51,6 +52,7 @@ class Modify extends Component {
     this.handlePublisher = this.handlePublisher.bind(this);
     this.handlePrinter = this.handlePrinter.bind(this);
     this.handleSource = this.handleSource.bind(this);
+    this.handleBinding = this.handleBinding.bind(this);
     this.handleDescription = this.handleDescription.bind(this);
     this.handleCost = this.handleCost.bind(this);
     this.handleDate = this.handleDate.bind(this);
@@ -84,6 +86,7 @@ class Modify extends Component {
         acquired: (res.data.acquired ? formatDate(new Date(res.data.acquired)) : '0000-00-00'),
         date: (res.data.date ? formatDate(new Date(res.data.date)) : '0000-00-00'),
         description: res.data.description,
+        binding: res.data.binding,
         owners: res.data.owners,
         printer: res.data.printer,
         publisher: res.data.publisher,
@@ -184,6 +187,11 @@ class Modify extends Component {
   handleSource(event) {
     this.setState({
       source: event.target.value
+    });
+  }
+  handleBinding(event) {
+    this.setState({
+      binding: event.target.value
     });
   }
   handleDescription(event) {
@@ -371,6 +379,7 @@ class Modify extends Component {
             {labeler("Date", <input className="form-control" type="date" id="date" onChange={this.handleDate} value={this.state.date}/>)}
             {labeler("Printer", <input className="form-control" placeholder="Printer" onChange={this.handlePrinter} value={this.state.printer}/>)}
             {labeler("Description", <textarea className="form-control" placeholder="Description" onChange={this.handleDescription} value={this.state.description}/>)}
+            {labeler("Binding", <textarea className="form-control" placeholder="Binding" onChange={this.handleBinding} value={this.state.binding}/>)}
             {labeler("Owners",
               <div className="form-group">
                 {owners}

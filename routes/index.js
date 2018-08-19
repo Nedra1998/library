@@ -145,6 +145,7 @@ router.post('/', (req, res, next) => {
     printer: req.body.printer,
     date: req.body.date,
     description: req.body.description,
+    binding: req.body.binding,
     owners: owners,
     ownersDescriptions: ownersDescriptions,
     cost: req.body.cost,
