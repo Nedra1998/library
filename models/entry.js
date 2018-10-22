@@ -5,9 +5,11 @@ var path = require('path');
 var entrySchema = mongoose.Schema({
   title: String,
   author: [String],
-  publisher: String,
-  printer: String,
+  publisher: [String],
+  printer: [String],
+  editor: [String],
   date: Date,
+  year: Number,
   description: String,
   binding: String,
   owners: [String],
@@ -28,9 +30,11 @@ module.exports.createEntry = (entry, callback) => {
   var newEntry = new Entry({
     title: entry.title ? entry.title : '',
     author: entry.author ? entry.author : [],
-    publisher: entry.publisher ? entry.publisher : '',
-    printer: entry.printer ? entry.printer : '',
+    publisher: entry.publisher ? entry.publisher : [],
+    printer: entry.printer ? entry.printer : [],
+    editor: entry.editor ? entry.editor : [],
     date: entry.date ? new Date(entry.date) : new Date(0),
+    year: entry.year ? entry.year : 0,
     description: entry.description ? entry.description : '',
     binding: entry.binding ? entry.binding : '',
     owners: entry.owners.length != 0 ? entry.owners : [],
@@ -93,7 +97,7 @@ module.exports.getYear = (year, type, callback) => {
     var matches = [];
     var match = parseInt(year);
     entries.forEach(entry => {
-      if((Math.floor(parseInt(entry.date.toISOString().substr(0,4)) / 100) * 100) === match){
+      if(entry.year === match){
         matches.push(entry);
       }
     });
@@ -368,7 +372,9 @@ module.exports.serialize = (entry) => {
     }) : [],
     publisher: entry.publisher,
     printer: entry.printer,
+    editor: entry.editor,
     date: new Date(entry.date).toISOString(),
+    year: entry.year,
     description: entry.description,
     binding: entry.binding,
     owners: owners,
@@ -409,7 +415,9 @@ module.exports.safeSerialize = (entry) => {
     }) : [],
     publisher: entry.publisher,
     printer: entry.printer,
+    editors: entry.editors,
     date: new Date(entry.date).toISOString(),
+    year: entry.year,
     description: entry.description,
     binding: entry.binding,
     owners: owners,

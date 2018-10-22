@@ -90,10 +90,10 @@ router.get('/date/:year', (req, res, next) => {
   Entry.getYear(req.params.year, null, (err, entries) => {
     if(err) return console.log(err);
     if (req.user) return res.json(entries.map(Entry.serialize).sort((a, b) => {
-      return (a['date'] < b['date']);
+      return (a['year'] < b['year']);
     }));
     else return res.json(entries.map(Entry.safeSerialize).sort((a,b) => {
-      return (a['date'] < b['date']);
+      return (a['year'] < b['year']);
     }));
   });
 });
@@ -143,7 +143,8 @@ router.post('/', (req, res, next) => {
     author: req.body.authors,
     publisher: req.body.publisher,
     printer: req.body.printer,
-    date: req.body.date,
+    editor: req.body.editor,
+    year: req.body.date,
     description: req.body.description,
     binding: req.body.binding,
     owners: owners,

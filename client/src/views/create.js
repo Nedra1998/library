@@ -14,9 +14,10 @@ class Create extends Component {
       loggedIn: false,
       title: '',
       authors: [''],
-      publisher: '',
-      printer: '',
-      date: '0001-01-01',
+      publisher: [''],
+      printer: [''],
+      editor: [''],
+      date: 0,
       binding: '',
       description: '',
       owners: [],
@@ -34,8 +35,15 @@ class Create extends Component {
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleName = this.handleName.bind(this);
-    this.handlePublisher = this.handlePublisher.bind(this);
-    this.handlePrinter = this.handlePrinter.bind(this);
+    this.handlePublisherAdd = this.handlePublisherAdd.bind(this);
+    this.handlePublisherChange = this.handlePublisherChange.bind(this);
+    this.handlePublisherRemove = this.handlePublisherRemove.bind(this);
+    this.handlePrinterAdd = this.handlePrinterAdd.bind(this);
+    this.handlePrinterChange = this.handlePrinterChange.bind(this);
+    this.handlePrinterRemove = this.handlePrinterRemove.bind(this);
+    this.handleEditorAdd = this.handleEditorAdd.bind(this);
+    this.handleEditorChange = this.handleEditorChange.bind(this);
+    this.handleEditorRemove = this.handleEditorRemove.bind(this);
     this.handleSource = this.handleSource.bind(this);
     this.handleReference = this.handleReference.bind(this);
     this.handleTranscription = this.handleTranscription.bind(this);
@@ -89,9 +97,10 @@ class Create extends Component {
             loggedIn: false,
             title: '',
             authors: [''],
-            publisher: '',
-            printer: '',
-            date: '0001-01-01',
+            publisher: [''],
+            printer: [''],
+            editor: [''],
+            date: 0,
             description: '',
             owners: [],
             cost: 0,
@@ -147,14 +156,64 @@ class Create extends Component {
       title: event.target.value
     });
   }
-  handlePublisher(event) {
+  handlePublisherChange = (idx) => (evt) => {
+    const newPublisher = this.state.publisher.map((author, id) => {
+      if (id !== idx) return author;
+      return evt.target.value;
+    });
     this.setState({
-      publisher: event.target.value
+      publisher: newPublisher
     });
   }
-  handlePrinter(event) {
+
+  handlePublisherAdd = () => {
     this.setState({
-      printer: event.target.value
+      publisher: this.state.publisher.concat([''])
+    });
+  }
+  handlePublisherRemove = (idx) => () => {
+    this.setState({
+      publisher: this.state.publisher.filter((a, id) => idx !== id)
+    });
+  }
+  handlePrinterChange = (idx) => (evt) => {
+    const newPrinter = this.state.printer.map((author, id) => {
+      if (id !== idx) return author;
+      return evt.target.value;
+    });
+    this.setState({
+      printer: newPrinter
+    });
+  }
+
+  handlePrinterAdd = () => {
+    this.setState({
+      printer: this.state.printer.concat([''])
+    });
+  }
+  handlePrinterRemove = (idx) => () => {
+    this.setState({
+      printer: this.state.printer.filter((a, id) => idx !== id)
+    });
+  }
+  handleEditorChange = (idx) => (evt) => {
+    const newEditor = this.state.editor.map((author, id) => {
+      if (id !== idx) return author;
+      return evt.target.value;
+    });
+    this.setState({
+      editor: newEditor
+    });
+  }
+
+  handleEditorAdd = () => {
+    this.setState({
+      editor: this.state.editor.concat([''])
+    });
+  }
+  handleEditorRemove = (idx) => () => {
+    this.setState({
+      editor: this.state.editor.filter((a, id) => idx !== id)
     });
   }
   handleSource(event) {
@@ -316,6 +375,42 @@ class Create extends Component {
         </div>
       );
     });
+    const publishers = this.state.publisher.map((author, idx) => {
+      return (
+        <div className="form-row" key={this.state.publisher.indexOf(author)}>
+          <div className="col">
+            <input className="form-control" placeholder={`Publisher #${idx+1}`} value={author} onChange={this.handlePublisherChange(idx)} />
+          </div>
+          <div className="col">
+            <button id="delete-publisher" className="btn btn-outline-danger" type="button" onClick={this.handlePublisherRemove(idx)}>-</button>
+          </div>
+        </div>
+      );
+    });
+    const printers = this.state.printer.map((author, idx) => {
+      return (
+        <div className="form-row" key={this.state.printer.indexOf(author)}>
+          <div className="col">
+            <input className="form-control" placeholder={`Printer #${idx+1}`} value={author} onChange={this.handlePrinterChange(idx)} />
+          </div>
+          <div className="col">
+            <button id="delete-printer" className="btn btn-outline-danger" type="button" onClick={this.handlePrinterRemove(idx)}>-</button>
+          </div>
+        </div>
+      );
+    });
+    const editors = this.state.editor.map((author, idx) => {
+      return (
+        <div className="form-row" key={this.state.editor.indexOf(author)}>
+          <div className="col">
+            <input className="form-control" placeholder={`Editor #${idx+1}`} value={author} onChange={this.handleEditorChange(idx)} />
+          </div>
+          <div className="col">
+            <button id="delete-editor" className="btn btn-outline-danger" type="button" onClick={this.handleEditorRemove(idx)}>-</button>
+          </div>
+        </div>
+      );
+    });
     const owners = this.state.owners.map((owner, idx) => {
       return (
         <div className="form-row">
@@ -346,9 +441,25 @@ class Create extends Component {
                 </div>
               </div>
             )}
-            {labeler("Publisher", <input className="form-control" placeholder="Publisher" onChange={this.handlePublisher} value={this.state.publisher}/>)}
-            {labeler("Date", <input className="form-control" type="date" id="date" onChange={this.handleDate} value={this.state.date}/>)}
-            {labeler("Printer", <input className="form-control" placeholder="Printer" onChange={this.handlePrinter} value={this.state.printer}/>)}
+            {labeler("Publisher", <div className="form-group">
+              {publishers}
+              <div className="p-2">
+                <button id="add-publisher" className="btn btn-outline-success" type="button" onClick={this.handlePublisherAdd}>Add Publisher</button>
+              </div>
+            </div>)}
+            {labeler("Date", <input className="form-control" type="number" id="date" onChange={this.handleDate} value={this.state.date}/>)}
+            {labeler("Printer", <div className="form-group">
+              {printers}
+              <div className="p-2">
+                <button id="add-printer" className="btn btn-outline-success" type="button" onClick={this.handlePrinterAdd}>Add Printer</button>
+              </div>
+            </div>)}
+            {labeler("Editor", <div className="form-group">
+              {editors}
+              <div className="p-2">
+                <button id="add-editor" className="btn btn-outline-success" type="button" onClick={this.handleEditorAdd}>Add Editor</button>
+              </div>
+            </div>)}
             {labeler("Description", <textarea className="form-control" placeholder="Description" onChange={this.handleDescription} value={this.state.description}/>)}
             {labeler("Binding", <textarea className="form-control" placeholder="Binding" onChange={this.handleBinding} value={this.state.binding}/>)}
             {labeler("Owners",

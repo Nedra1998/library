@@ -48,9 +48,7 @@ def main():
                     entries.append(item)
     for entry in entries:
         print("Uploading {}...".format(entry['title']))
-        if 'cost' in entry and entry['cost'] == 1000.0:
-            pprint(entry)
-            res = requests.post('https://rasmussen-collection.herokuapp.com/api/book/', entry)
+        res = requests.post('https://rasmussen-collection.herokuapp.com/api/book/', entry)
 
 
 if __name__ == "__main__":
