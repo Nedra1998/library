@@ -1,0 +1,51 @@
+Arguments: 
+  /usr/bin/node /usr/share/yarn/bin/yarn.js run
+
+PATH: 
+  /home/arden/.rbenv/shims:/home/arden/.goenv/shims:/home/arden/.swiftenv/shims:/home/arden/.pyenv/shims:/home/arden/bin:/home/arden/.yarn/bin:/home/arden/.cargo/bin:/home/arden/.rbenv/bin:/home/arden/.goenv/bin:/home/arden/.swiftenv/bin:/home/arden/.pyenv/bin:/home/arden/.config/composer/vendor/bin:/home/arden/.zplug/repos/zplug/zplug/bin:/home/arden/.zplug/bin:/home/arden/.cargo/bin:/home/arden/.local/bin:/home/arden/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/arden/.fzf/bin
+
+Yarn version: 
+  1.10.1
+
+Node version: 
+  8.10.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/arden/Programming/javascript/library/package.json: Unexpected token } in JSON at position 182
+      at JSON.parse (<anonymous>)
+      at /usr/share/yarn/lib/cli.js:1136:59
+      at Generator.next (<anonymous>)
+      at step (/usr/share/yarn/lib/cli.js:98:30)
+      at /usr/share/yarn/lib/cli.js:109:13
+      at <anonymous>
+
+npm manifest: 
+  {
+    "name": "rasmussen-collection",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js",
+      "server": "nodemon index.js",
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/Nedra1998/library.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/Nedra1998/library/issues"
+    },
+    "homepage": "https://github.com/Nedra1998/library#readme"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

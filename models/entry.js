@@ -1,22 +1,20 @@
 var mongoose = require('mongoose');
 var Fuse = require('fuse.js');
-var path = require('path');
 
 var entrySchema = mongoose.Schema({
   title: String,
-  author: [String],
-  publisher: [String],
-  printer: [String],
-  editor: [String],
-  date: Date,
-  year: Number,
-  description: String,
-  binding: String,
+  authors: [String],
+  publishers: [String],
+  printers: [String],
+  editors: [String],
   owners: [String],
   ownersDescriptions: [String],
-  cost: Number,
+  date: Number,
   acquired: Date,
+  cost: Number,
   appraisalValue: Number,
+  description: String,
+  binding: String,
   titleTranscription: String,
   reference: String,
   source: String,
@@ -28,28 +26,16 @@ var Entry = module.exports = mongoose.model('Entry', entrySchema);
 
 module.exports.createEntry = (entry, callback) => {
   var newEntry = new Entry({
-    title: entry.title ? entry.title : '',
-    author: entry.author ? entry.author : [],
-    publisher: entry.publisher ? entry.publisher : [],
-    printer: entry.printer ? entry.printer : [],
-    editor: entry.editor ? entry.editor : [],
-    date: entry.date ? new Date(entry.date) : new Date(0),
-    year: entry.year ? entry.year : 0,
-    description: entry.description ? entry.description : '',
-    binding: entry.binding ? entry.binding : '',
-    owners: entry.owners.length != 0 ? entry.owners : [],
-    ownersDescriptions: entry.ownersDescriptions != [] ? entry.ownersDescriptions : [],
-    cost: entry.cost ? entry.cost : 0,
-    acquired: entry.acquired ? new Date(entry.acquired) : new Date(0),
-    appraisalValue: entry.appraisalValue ? entry.appraisalValue : 0,
-    titleTranscription: entry.titleTranscription ? entry.titleTranscription : '',
-    reference: entry.reference ? entry.reference : '',
-    source: entry.source ? entry.source : '',
-    type: entry.type ? entry.type : 'BOOK',
-    files: []
+    entry
   });
   newEntry.save();
   callback(null, newEntry);
+}
+
+module.exports.deleteEntry = (id, callback) => {
+  Entry.findOne({
+    _id: id
+  }).remove(callback);
 }
 
 module.exports.getBooks = (callback) => {
@@ -58,89 +44,38 @@ module.exports.getBooks = (callback) => {
   }, callback);
 }
 
-
-module.exports.get = (id, type, callback) => {
-  Entry.findOne(type ? {
-    _id: id,
-    type: type
-  } : {
-    _id: id,
+module.exports.get = (id, callback) => {
+  Entry.findOne({
+    _id: id
   }, callback);
-}
-
-module.exports.deleteEntry = (id, type, callback) => {
-  Entry.findOne(type ? {
-    _id: id,
-    type: type
-  } : {
-    _id: id,
-  }).remove(callback);
 }
 
 module.exports.getLetter = (letter, type, callback) => {
   escape = (text) => {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
-  var query;
-  if (type) query = {
+  var query = type ? {
     title: new RegExp('^' + escape(letter.toLowerCase()), 'i'),
     type: type
-  };
-  else query = {
+  } : {
     title: new RegExp('^' + escape(letter.toLowerCase()), 'i')
   };
   Entry.find(query, callback);
 }
-module.exports.getYear = (year, type, callback) => {
-  Entry.find((type ? {type: type} : {}), (err, entries) => {
-    if(err) return callback(err);
-    var matches = [];
-    var match = parseInt(year);
-    entries.forEach(entry => {
-      if(entry.year === match){
-        matches.push(entry);
-      }
-    });
-    callback(null, matches);
-  });
+
+module.exports.getDate = (date, type, callback) => {
+  Entry.find(type ? {date: date , type: type} : {date: date}, callback);
 }
-module.exports.getAll = (type, callback) => Entry.find((type ? {
-  type: type
-} : {}), callback);
-module.exports.getTitle = (title, callback) => {
-  Entry.find({
-    title: new RegExp("^" + title.toLowerCase(), "i"),
-  }, callback);
-}
-module.exports.getAuthor = (author, callback) => {
-  Entry.find({
-    author: new RegExp("^" + author.toLowerCase(), "i"),
-  }, callback);
-}
-module.exports.getPublisher = (publisher, callback) => {
-  Entry.find({
-    publisher: new RegExp("^" + publisher.toLowerCase(), "i"),
-  }, callback);
-}
-module.exports.getPrinter = (printer, callback) => {
-  Entry.find({
-    printer: new RegExp("^" + printer.toLowerCase(), "i"),
-  }, callback);
-}
-module.exports.getOwner = (name, callback) => {
-  Entry.find({
-    owners: new RegExp("^" + owners.toLowerCase(), "i"),
-  }, callback);
+
+module.exports.getAll = (type, callback) => {
+  Entry.find(type ? {type: type} : {}, callback);
 }
 
 module.exports.getName = (name, loggedin, callback) => {
-  Entry.find({
-    author: new RegExp("^" + name.toLowerCase() + "$", "i"),
-  }, (err, authored) => {
+  re = new RegExp('^' + name.toLowerCase() + '$', 'i');
+  Entry.find({ authors: re }, (err, authored) => {
     if (err) return callback(err);
-    Entry.find({
-      owners: new RegExp("^" + name.toLowerCase() + "$", "i"),
-    }, (err, owned) => {
+    Entry.find({ owners: re }, (err, owned) => {
       if (err) return callback(err);
       callback(null, {
         "author": (loggedin ? authored.map(Entry.serialize) : authored.map(Entry.safeSerialize)),
@@ -149,7 +84,6 @@ module.exports.getName = (name, loggedin, callback) => {
     });
   });
 }
-
 module.exports.getTitles = (type, callback) => {
   Entry.find(type ? {
     type: type
@@ -174,31 +108,6 @@ module.exports.getDates = (type, callback) => {
     callback(null, dates);
   });
 }
-module.exports.getAuthors = (type, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    var authors = new Set([]);
-    for (var key in entries) {
-      entries[key].author.forEach(name => authors.add(name));
-    }
-    callback(null, Array.from(authors));
-  });
-}
-module.exports.getOwners = (type, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : type, (err, entries) => {
-    if (err) return callback(err);
-    var owners = new Set([]);
-    for (var key in entries) {
-      entries[key].owners.forEach(name => owners.add(name));
-    }
-    callback(null, Array.from(owners));
-  });
-}
-
 module.exports.getPeople = (type, callback) => {
   Entry.find(type ? {
     type: type
@@ -206,7 +115,7 @@ module.exports.getPeople = (type, callback) => {
     if(err) return callback(err);
     var people = new Set([]);
     for (var key in entries){
-      entries[key].author.forEach(name => people.add(name));
+      entries[key].authors.forEach(name => people.add(name));
       entries[key].owners.forEach(owner => people.add(owner));
     }
     callback(null, Array.from(people));
@@ -214,10 +123,9 @@ module.exports.getPeople = (type, callback) => {
 }
 
 module.exports.findSearch = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
+  Entry.find(type ? { type: type } : {}, (err, entries) => {
     if (err) return callback(err);
+    console.log(entries);
     entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
     var fuse = new Fuse(entries, {
       shouldSort: true,
@@ -228,126 +136,13 @@ module.exports.findSearch = (query, type, loggedin, callback) => {
       minMatchCharLength: 1,
       keys: [
         'title',
-        'author',
-        'publisher',
+        'authors',
+        'publishers',
         'owners',
         'date',
-        'printer',
+        'printers',
         'source'
       ]
-    });
-    callback(null, fuse.search(query));
-  });
-}
-module.exports.findAdvanced = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : type, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    if (query.title) {
-      var titleSearch = new Fuse(entries, {
-        keys: ['title']
-      });
-      entries = titleSearch.search(query.title);
-    }
-    if (query.author) {
-      var authorSearch = new Fuse(entries, {
-        keys: ['author']
-      });
-      entries = authorSearch.search(query.author);
-    }
-    if (query.publisher) {
-      var publisherSearch = new Fuse(entries, {
-        keys: ['publisher']
-      });
-      entries = publisherSearch.search(query.publisher);
-    }
-    if (query.printer) {
-      var printerSearch = new Fuse(entries, {
-        keys: ['printer']
-      });
-      entries = printerSearch.search(query.printer);
-    }
-    if (query.owner) {
-      var ownerSearch = new Fuse(entries, {
-        keys: ['owners.name']
-      });
-      entries = ownerSearch.search(query.owner);
-    }
-    callback(null, entries);
-  });
-}
-module.exports.findTitle = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-      keys: ['title']
-    });
-    callback(null, fuse.search(query));
-  });
-}
-module.exports.findAuthor = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-      keys: ['author']
-    });
-    callback(null, fuse.search(query));
-  });
-}
-module.exports.findPerson = (query, type, loggedin, callback) => {
-  Entry.getPeople(type, (err, entries) => {
-    if (err) return callback(err);
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-    });
-    callback(null, fuse.search(query).map(id => {return entries[id]}));
-  });
-}
-module.exports.findPublisher = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-      keys: ['publisher']
-    });
-    callback(null, fuse.search(query));
-  });
-}
-module.exports.findPrinter = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-      keys: ['printer']
-    });
-    callback(null, fuse.search(query));
-  });
-}
-module.exports.findOwner = (query, type, loggedin, callback) => {
-  Entry.find(type ? {
-    type: type
-  } : {}, (err, entries) => {
-    if (err) return callback(err);
-    entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
-    var fuse = new Fuse(entries, {
-      shouldSort: true,
-      keys: ['owners.name']
     });
     callback(null, fuse.search(query));
   });
@@ -367,14 +162,10 @@ module.exports.serialize = (entry) => {
   return {
     id: entry._id,
     title: entry.title,
-    author: entry.author ? entry.author.map(auth => {
-      return auth;
-    }) : [],
+    authors: entry.authors,
     publisher: entry.publisher,
     printer: entry.printer,
-    editor: entry.editor,
     date: new Date(entry.date).toISOString(),
-    year: entry.year,
     description: entry.description,
     binding: entry.binding,
     owners: owners,
@@ -410,14 +201,10 @@ module.exports.safeSerialize = (entry) => {
   return {
     id: entry._id,
     title: entry.title,
-    author: entry.author ? entry.author.map(auth => {
-      return auth;
-    }) : [],
+    authors: entry.authors,
     publisher: entry.publisher,
     printer: entry.printer,
-    editors: entry.editors,
     date: new Date(entry.date).toISOString(),
-    year: entry.year,
     description: entry.description,
     binding: entry.binding,
     owners: owners,

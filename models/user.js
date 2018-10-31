@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 
+mongoose.set('useCreateIndex', true);
+
 var userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -39,4 +41,3 @@ module.exports.getUserById = (id, callback) => {
 module.exports.comparePassword = (password, hash, callback) => {
   bcrypt.compare(password, hash, callback)
 }
-

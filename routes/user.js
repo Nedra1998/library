@@ -1,10 +1,10 @@
 var express = require('express');
-var router = express.Router();
-
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 
-var User = require('../models/user');
+var User = require('../models/user.js');
+
+var router = express.Router();
 
 passport.use(new localStrategy(
   (username, password, callback) => {
@@ -81,6 +81,5 @@ router.get('/loggedin', (req, res, next) => {
   if(req.user) res.json({'loggedIn': true});
   else res.json({'loggedIn': false});
 });
-
 
 module.exports = router;
