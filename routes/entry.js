@@ -82,7 +82,6 @@ router.get('/name', (req, res, next) => {
 router.get('/search', (req,res) => {
   Entry.findSearch(req.query.query, null, req.user, (err, results) => {
     res.json(results);
-    // return results;
   });
 });
 

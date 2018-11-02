@@ -43,4 +43,4 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.use('/api/', apiRouter);
 
-app.listen(8000);
+app.listen(3000);

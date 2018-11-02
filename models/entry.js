@@ -125,7 +125,6 @@ module.exports.getPeople = (type, callback) => {
 module.exports.findSearch = (query, type, loggedin, callback) => {
   Entry.find(type ? { type: type } : {}, (err, entries) => {
     if (err) return callback(err);
-    console.log(entries);
     entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
     var fuse = new Fuse(entries, {
       shouldSort: true,
@@ -165,7 +164,7 @@ module.exports.serialize = (entry) => {
     authors: entry.authors,
     publisher: entry.publisher,
     printer: entry.printer,
-    date: new Date(entry.date).toISOString(),
+    date: entry.date,
     description: entry.description,
     binding: entry.binding,
     owners: owners,
@@ -204,7 +203,7 @@ module.exports.safeSerialize = (entry) => {
     authors: entry.authors,
     publisher: entry.publisher,
     printer: entry.printer,
-    date: new Date(entry.date).toISOString(),
+    date: entry.date,
     description: entry.description,
     binding: entry.binding,
     owners: owners,
