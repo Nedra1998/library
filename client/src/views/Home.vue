@@ -3,6 +3,7 @@
     <Header />
     <div class="p-3 container">
       <SearchBox catagory='entry'/>
+      <List />
     </div>
   </div>
 </template>
@@ -11,11 +12,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Header from '@/components/Header.vue';
 import SearchBox from '@/components/SearchBox.vue';
+import List from '@/components/List.vue';
 
 @Component({
   components: {
     Header,
     SearchBox,
+    List,
   },
 })
 export default class Home extends Vue {}

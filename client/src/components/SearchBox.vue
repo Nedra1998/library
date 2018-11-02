@@ -17,20 +17,31 @@
         </form>
           </div>
       </div>
+      <SearchResult v-bind:catagory="catagory" />
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import SearchResult from '@/components/SearchResult.vue';
 
-@Component
+@Component({
+  components: {
+    SearchResult,
+  },
+})
 export default class SearchBox extends Vue {
   @Prop() private catagory!: string;
   private live: boolean = true;
   private query: string = '';
   private handleSearch(): void {
+    console.log(this.query);
     if (this.query !== '') {
       this.$store.dispatch('search', [this.catagory, this.query]);
+    } else if (this.query === '' && this.catagory === 'entry') {
+      this.$store.commit('setQueryEntryResult', []);
+    } else if (this.query === '' && this.catagory === 'people') {
+      this.$store.commit('setQueryPeopleResult', []);
     }
   }
   private handleSearchLive(): void {
