@@ -3,7 +3,7 @@
     <Header />
     <div class="p-3 container">
       <SearchBox catagory='entry'/>
-      <List />
+      <List catagory='entry'/>
     </div>
   </div>
 </template>

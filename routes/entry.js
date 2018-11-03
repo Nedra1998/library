@@ -15,7 +15,7 @@ function glist(elems) {
 }
 
 router.get('/', function(req, res, next) {
-  Entry.getAll((err, entries) => {
+  Entry.getAll(null, (err, entries) => {
     if (err) return console.log(err)
     if (req.user) return res.json(entries.map(Entry.serialize));
     else return res.json(entries.map(Entry.safeSerialize));
@@ -85,7 +85,7 @@ router.get('/search', (req,res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/id/:id', (req, res) => {
   Entry.get(req.params.id, (err, entry) => {
     if (err) return console.log(err);
     if (entry) res.json((req.user ? Entry.serialize(entry) : Entry.safeSerialize(entry)));
