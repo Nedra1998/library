@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 import Entry from './views/Entry.vue';
+import Create from './views/Create.vue';
 
 Vue.use(Router);
 
@@ -18,6 +19,11 @@ export default new Router({
       name: 'entry',
       component: Entry,
       props: true,
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: Create,
     },
     {
       path: '/login',
