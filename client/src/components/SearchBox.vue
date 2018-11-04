@@ -35,7 +35,6 @@ export default class SearchBox extends Vue {
   private live: boolean = true;
   private query: string = '';
   private handleSearch(): void {
-    console.log(this.query);
     if (this.query !== '') {
       this.$store.dispatch('search', [this.catagory, this.query]);
     } else if (this.query === '' && this.catagory === 'entry') {

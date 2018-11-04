@@ -62,6 +62,7 @@ router.get('/dates/:year', (req, res, next) => {
 });
 
 router.get('/delete/:id', (req, res, next) => {
+  console.log("Hello!");
   if(!req.user) return res.json({'error': 'Must be logged in to delete entry'});
   Entry.deleteEntry(req.params.id, null, (err, entry) => {
     if(err) return console.log(err);
@@ -107,6 +108,7 @@ router.post('/', (req, res, next) => {
       return entry.description
     });
   }
+  console.log(req.body);
   Entry.createEntry({
     title: req.body.title,
     authors: glist(req.body.authors),
@@ -119,14 +121,15 @@ router.post('/', (req, res, next) => {
     owners: owners,
     ownersDescriptions: ownersDescriptions,
     cost: req.body.cost,
-    acquired: req.body.acquired,
+    acquired: new Date(req.body.acquired),
     source: req.body.source,
-    appraisalValue: req.body.value,
-    titleTranscription: req.body.transcription,
+    appraisalValue: req.body.appraisalValue,
+    titleTranscription: req.body.titleTranscription,
     reference: req.body.reference,
     type: req.body.type
   }, (err, entry) => {
     if (err) return console.log(err);
+    console.log(entry);
     res.json(Entry.serialize(entry));
     if (req.files) {
       var files = []

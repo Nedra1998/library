@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config()
 
 var os = require('os');
+var path = require('path');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -21,7 +22,6 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
-// app.use(bodyParser());
 app.use(formParser.parse({uploadDir: os.tmpdir(), autoClean: true}));
 app.use(formParser.format());
 app.use(formParser.stream());
@@ -37,6 +37,8 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -47,5 +49,8 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.use('/api/', apiRouter);
+app.get('*', function(req, res){
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+})
 
 app.listen(3000);

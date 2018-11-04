@@ -9,7 +9,7 @@
           <label for="inputPassword" class="sr-only">Password</label>
           <input type="password" id="inputPassword" class="form-control" placeholder="Name" required v-model="password" />
           <div class="p-3">
-            <button class="btn btn-lg btn-primary btn-block" type="button" v-on:click="$store.dispatch('login', [name, password])">Sign In</button>
+            <button class="btn btn-lg btn-primary btn-block" type="button" v-on:click="userLogin()">Sign In</button>
           </div>
         </form>
     </div>
@@ -31,5 +31,9 @@ import Footer from '@/components/Footer.vue';
 export default class Home extends Vue {
   private name: string = '';
   private password: string = '';
+  private userLogin(): any {
+    this.$store.dispatch('login', [this.name, this.password]);
+    this.$router.push('/');
+  }
 }
 </script>

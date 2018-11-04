@@ -3,7 +3,7 @@
     <Header />
       <div class="p-3 container">
         <form>
-          <h1 clas="h3 mb-3 font-width-normal">Create New Entry</h1>
+          <h1 clas="h3 mb-3 font-width-normal">Modify Entry</h1>
           <div class="form-group row" id="title">
             <label class="col-sm-2 col-form-label">Title</label>
             <div class="col-sm-10">
@@ -149,7 +149,7 @@
                   <button type="button" class="dropdown-item" v-on:click="entry.currency = 'eur'">&euro;</button>
                 </div>
               </div>
-              <input class="form-control currency" type="number" data-number-to-fixed="2" data-number-stepfactor="100" v-model="entry.cost" />
+              <input class="form-control currency" type="number" step="0.01" v-model="entry.cost" />
             </div>
           </div>
           <div class="form-group row" id="appraisal">
@@ -166,7 +166,7 @@
                   <button type="button" class="dropdown-item" v-on:click="entry.appraisalCurrency = 'eur'">&euro;</button>
                 </div>
               </div>
-              <input class="form-control currency" type="number" data-number-to-fixed="2" data-number-stepfactor="100" v-model="entry.appraisalValue" />
+              <input class="form-control currency" type="number" step="0.01" v-model="entry.appraisalValue" />
             </div>
           </div>
           <button class="btn btn-success btn-lg btn-block" v-on:click="submit()" :disabled="isValid() === false">Submit</button>
@@ -187,26 +187,27 @@ import Footer from '@/components/Footer.vue';
     Footer,
   },
 })
-export default class Entry extends Vue {
-  private entry: any = {
-    title: '',
-    authors: [],
-    publishers: [],
-    printers: [],
-    editors: [],
-    date: 0,
-    titleTranscription: '',
-    reference: '',
-    binding: '',
-    description: '',
-    owners: [],
-    source: '',
-    acquired: '0001-01-01',
-    cost: 0,
-    currency: 'usd',
-    appraisalValue: 0,
-    appraisalCurrency: 'usd',
-  };
+export default class Modify extends Vue {
+  @Prop() private id: any;
+  private entry: any = {};
+  private mounted() {
+    this.$store.watch((state) => state.entries, () => {
+      for (const entry of this.$store.state.entries) {
+        if (entry.id === this.id) {
+          this.entry = entry;
+          this.entry.currency = 'usd';
+          this.entry.appraisalCurrency = 'usd';
+        }
+      }
+    });
+    for (const entry of this.$store.state.entries) {
+      if (entry.id === this.id) {
+        this.entry = entry;
+        this.entry.currency = 'usd';
+        this.entry.appraisalCurrency = 'usd';
+      }
+    }
+  }
   private isValid(): boolean {
     return true;
   }
@@ -215,8 +216,8 @@ export default class Entry extends Vue {
       this.entry.cost = value;
       this.convert(this.entry.appraisalValue, this.entry.appraisalCurrency, null, (value2: number) => {
         this.entry.appraisalValue = value2;
-        this.$store.dispatch('createEntry', this.entry);
-        this.$router.push('/');
+        this.$store.dispatch('modifyEntry', [this.id, this.entry]);
+        this.$router.push('/entry/' + this.id);
       });
     });
   }

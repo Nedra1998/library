@@ -44,11 +44,10 @@ import EntryList from '@/components/EntryList.vue';
 })
 export default class List extends Vue {
   @Prop() private catagory!: string;
-  private index: Array<string> = [];
+  private index: string[] = [];
   private current: any = 'all';
   private useDate: boolean = false;
-  constructor() {
-    super();
+  private mounted() {
     this.$store.watch((state) => state.entries, () => {
       this.loadIndex();
     });
@@ -60,15 +59,15 @@ export default class List extends Vue {
   }
   private loadIndex(): any {
     if (this.catagory === 'entry') {
-      let index_set = new Set();
-      for (let entry of this.$store.state.entries){
-        if (this.useDate === false){
-          index_set.add(entry.title[0].toUpperCase());
+      const indexSet = new Set();
+      for (const entry of this.$store.state.entries) {
+        if (this.useDate === false) {
+          indexSet.add(entry.title[0].toUpperCase());
         } else {
-          index_set.add(Math.floor(entry.date / 100) * 100);
+          indexSet.add(Math.floor(entry.date / 100) * 100);
         }
       }
-      this.index = Array.from(index_set.values()).sort();
+      this.index = Array.from(indexSet.values()).sort();
     } else if (this.catagory === 'people') {
 
     }

@@ -25,14 +25,12 @@ var entrySchema = mongoose.Schema({
 var Entry = module.exports = mongoose.model('Entry', entrySchema);
 
 module.exports.createEntry = (entry, callback) => {
-  var newEntry = new Entry({
-    entry
-  });
+  var newEntry = new Entry(entry);
   newEntry.save();
   callback(null, newEntry);
 }
 
-module.exports.deleteEntry = (id, callback) => {
+module.exports.deleteEntry = (id, type, callback) => {
   Entry.findOne({
     _id: id
   }).remove(callback);
@@ -64,18 +62,29 @@ module.exports.getLetter = (letter, type, callback) => {
 }
 
 module.exports.getDate = (date, type, callback) => {
-  Entry.find(type ? {date: date , type: type} : {date: date}, callback);
+  Entry.find(type ? {
+    date: date,
+    type: type
+  } : {
+    date: date
+  }, callback);
 }
 
 module.exports.getAll = (type, callback) => {
-  Entry.find(type ? {type: type} : {}, callback);
+  Entry.find(type ? {
+    type: type
+  } : {}, callback);
 }
 
 module.exports.getName = (name, loggedin, callback) => {
   re = new RegExp('^' + name.toLowerCase() + '$', 'i');
-  Entry.find({ authors: re }, (err, authored) => {
+  Entry.find({
+    authors: re
+  }, (err, authored) => {
     if (err) return callback(err);
-    Entry.find({ owners: re }, (err, owned) => {
+    Entry.find({
+      owners: re
+    }, (err, owned) => {
       if (err) return callback(err);
       callback(null, {
         "author": (loggedin ? authored.map(Entry.serialize) : authored.map(Entry.safeSerialize)),
@@ -112,9 +121,9 @@ module.exports.getPeople = (type, callback) => {
   Entry.find(type ? {
     type: type
   } : type, (err, entries) => {
-    if(err) return callback(err);
+    if (err) return callback(err);
     var people = new Set([]);
-    for (var key in entries){
+    for (var key in entries) {
       entries[key].authors.forEach(name => people.add(name));
       entries[key].owners.forEach(owner => people.add(owner));
     }
@@ -123,7 +132,9 @@ module.exports.getPeople = (type, callback) => {
 }
 
 module.exports.findSearch = (query, type, loggedin, callback) => {
-  Entry.find(type ? { type: type } : {}, (err, entries) => {
+  Entry.find(type ? {
+    type: type
+  } : {}, (err, entries) => {
     if (err) return callback(err);
     entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
     var fuse = new Fuse(entries, {

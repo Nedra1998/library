@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "dev": "concurrently --kill-others-on-fail \"nodemon index.js\" \"cd client && yarn serve\""
+    "dev": "concurrently --kill-others-on-fail \"nodemon index.js\" \"cd client && yarn serve\"",
+    "heroku-postbuild": "cd client && yarn install && yarn run build"
   },
   "repository": {
     "type": "git",

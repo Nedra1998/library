@@ -58,13 +58,18 @@
                 <dd class="col-sm-9" v-if="entry.acquired !== null">{{ entry.acquired }}</dd>
                 <dt class="col-sm-3" v-if="entry.cost !== 0">Cost</dt>
                 <dd class="col-sm-9" v-if="entry.cost !== 0">$ {{ entry.cost }}</dd>
-                <dt class="col-sm-3" v-if="entry.appraisal !== 0">Appraisal</dt>
-                <dd class="col-sm-9" v-if="entry.appraisal !== 0">$ {{ entry.appraisal }}</dd>
+                <dt class="col-sm-3" v-if="entry.appraisalValue !== 0">Appraisal</dt>
+                <dd class="col-sm-9" v-if="entry.appraisalValue !== 0">$ {{ entry.appraisalValue }}</dd>
               </dl>
+              <div v-if="$store.state.user !== null">
+                <button typ="button" class="btn btn-outline-danger col-sm-2 mx-1" v-on:click="deleteEntry()">Delete</button>
+                <router-link class="btn btn-outline-warning col-sm-2 mx-1" :to="'/modify/' + id">Modify</router-link>
+              </div>
             </div>
           </div>
           <div class="card-body" v-else>
-            <h2 class="card-title">Loading</h2>
+            <h2 class="card-title">Loading...</h2>
+            <p class="text-muted">{{ id }}</p>
           </div>
         </div>
       </div>
@@ -87,24 +92,27 @@ import showdown from 'showdown';
 export default class Entry extends Vue {
   @Prop() private id: any;
   private entry: any = null;
-  constructor() {
-    super();
+  private mounted() {
     this.$store.watch((state) => state.entries, () => {
-      for (let entry of this.$store.state.entries) {
+      for (const entry of this.$store.state.entries) {
         if (entry.id === this.id) {
           this.entry = entry;
         }
       }
     });
-    for (let entry of this.$store.state.entries) {
+    for (const entry of this.$store.state.entries) {
       if (entry.id === this.id) {
         this.entry = entry;
       }
     }
   }
   private markdown(source: string): any {
-    let converter = new showdown.Converter();
+    const converter = new showdown.Converter();
     return converter.makeHtml(source);
+  }
+  private deleteEntry(): any {
+    this.$store.dispatch('deleteEntry', this.id);
+    this.$router.push('/');
   }
 }
 </script>
