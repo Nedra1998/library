@@ -1,7 +1,10 @@
 const express = require('express');
 require('dotenv').config()
 
+var os = require('os');
+
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var formParser = require('express-form-data');
 var session = require('cookie-session');
 
@@ -18,6 +21,8 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
+// app.use(bodyParser());
+app.use(formParser.parse({uploadDir: os.tmpdir(), autoClean: true}));
 app.use(formParser.format());
 app.use(formParser.stream());
 app.use(formParser.union());

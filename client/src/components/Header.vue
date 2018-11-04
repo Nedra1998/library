@@ -16,7 +16,7 @@
             People
           </router-link>
         </li>
-        <li class="nav-item" v-if="$store.state.user !== undefined">
+        <li class="nav-item" v-if="$store.state.user !== null">
           <router-link class="nav-link" to="/create" v-bind:class="{ 'active': $route.path === '/create' }">
             Create
           </router-link>

@@ -5,18 +5,21 @@
       <SearchBox catagory='entry'/>
       <List catagory='entry'/>
     </div>
+    <Footer />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 import SearchBox from '@/components/SearchBox.vue';
 import List from '@/components/List.vue';
 
 @Component({
   components: {
     Header,
+    Footer,
     SearchBox,
     List,
   },

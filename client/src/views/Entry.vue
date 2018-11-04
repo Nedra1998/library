@@ -15,18 +15,51 @@
               <dl class="row">
                 <dt class="col-sm-3" v-if="entry.title !== ''">Title</dt>
                 <dd class="col-sm-9" v-if="entry.title !== ''"><p v-html="markdown(entry.title)"></p></dd>
-                <dt class="col-sm-3" v-if="entry.authors !== []">Authors</dt>
-                <dd class="col-sm-9" v-if="entry.authors !== []">
+                <dt class="col-sm-3" v-if="entry.authors.length !== 0">Authors</dt>
+                <dd class="col-sm-9" v-if="entry.authors.length !== 0">
                   <router-link class="text-primary mx-1" :to="'/people/' + author" :key="author" v-for="author in entry.authors">
                     {{ author }}
                   </router-link>
                 </dd>
-                <dt class="col-sm-3" v-if="entry.publishers !== []">Publishers</dt>
-                <dd class="col-sm-9" v-if="entry.publishers !== []">
+                <dt class="col-sm-3" v-if="entry.publishers.length !== 0">Publishers</dt>
+                <dd class="col-sm-9" v-if="entry.publishers.length !== 0">
                   <router-link class="text-primary mx-1" :to="'/people/' + publisher" :key="publisher" v-for="publisher in entry.publishers">
                     {{ publisher }}
                   </router-link>
                 </dd>
+                <dt class="col-sm-3" v-if="entry.printers.length !== 0">Printers</dt>
+                <dd class="col-sm-9" v-if="entry.printers.length !== 0">
+                  <router-link class="text-primary mx-1" :to="'/people/' + printer" :key="printer" v-for="printer in entry.printers">
+                    {{ printer }}
+                  </router-link>
+                </dd>
+                <dt class="col-sm-3" v-if="entry.date !== 0">Date</dt>
+                <dd class="col-sm-9" v-if="entry.date !== 0">{{ entry.date }}</dd>
+                <dt class="col-sm-3" v-if="entry.titleTranscription !== ''">Title Transcription</dt>
+                <dd class="col-sm-9" v-if="entry.titleTranscription !== ''"><p v-html="markdown(entry.titleTranscription)"></p></dd>
+                <dt class="col-sm-3" v-if="entry.reference !== ''">Reference</dt>
+                <dd class="col-sm-9" v-if="entry.reference !== ''"><p v-html="markdown(entry.reference)"></p></dd>
+                <dt class="col-sm-3" v-if="entry.binding !== ''">Binding</dt>
+                <dd class="col-sm-9" v-if="entry.binding !== ''"><p v-html="markdown(entry.binding)"></p></dd>
+                <dt class="col-sm-3" v-if="entry.description !== ''">Description</dt>
+                <dd class="col-sm-9" v-if="entry.description !== ''"><p v-html="markdown(entry.description)"></p></dd>
+                <dt class="col-sm-3" v-if="entry.owners.length !== 0">Owners</dt>
+                <dd class="col-sm-9" v-if="entry.owners.length !== 0">
+                  <dl class="row" :key="owner.name" v-for="owner in entry.owners">
+                    <dt class="col-sm-3"><router-link class="text-primary mx-1" :to="'/peolpe/' + owner">{{ owner.name }}</router-link></dt>
+                    <dd class="col-sm-9"><p v-html="markdown(owner.description)"></p></dd>
+                  </dl>
+                </dd>
+              </dl>
+              <dl class="row" v-if="$store.state.user !== null">
+                <dt class="col-sm-3" v-if="entry.source !== ''">Source</dt>
+                <dd class="col-sm-9" v-if="entry.source !== ''">{{ entry.source }}</dd>
+                <dt class="col-sm-3" v-if="entry.acquired !== null">Acquired</dt>
+                <dd class="col-sm-9" v-if="entry.acquired !== null">{{ entry.acquired }}</dd>
+                <dt class="col-sm-3" v-if="entry.cost !== 0">Cost</dt>
+                <dd class="col-sm-9" v-if="entry.cost !== 0">$ {{ entry.cost }}</dd>
+                <dt class="col-sm-3" v-if="entry.appraisal !== 0">Appraisal</dt>
+                <dd class="col-sm-9" v-if="entry.appraisal !== 0">$ {{ entry.appraisal }}</dd>
               </dl>
             </div>
           </div>
@@ -35,17 +68,20 @@
           </div>
         </div>
       </div>
+    <Footer />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 import showdown from 'showdown';
 
 @Component({
   components: {
     Header,
+    Footer,
   },
 })
 export default class Entry extends Vue {

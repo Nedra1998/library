@@ -78,8 +78,8 @@ router.get('/logout', (req, res, next) => {
 });
 
 router.get('/loggedin', (req, res, next) => {
-  if(req.user) res.json({'loggedIn': true});
-  else res.json({'loggedIn': false});
+  if(req.user) res.json({'loggedIn': true, name: req.user.name});
+  else res.json({'loggedIn': false, name: null});
 });
 
 module.exports = router;

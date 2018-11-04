@@ -6,12 +6,15 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user: undefined,
+    user: null,
     entries: [],
     queryEntryResult: [],
     queryPeopleResult: [],
   },
   mutations: {
+    setUser(state, payload) {
+      state.user = payload;
+    },
     setEntries(state, payload) {
       state.entries = payload.sort((a: any, b: any): number => {
         if (a.title < b.title) {
@@ -39,15 +42,27 @@ export default new Vuex.Store({
   },
   actions: {
     checkUser({ commit }): any {
-      console.log("CHECK USER");
+      axios.get('http://localhost:3000/api/user/loggedin', {withCredentials: true}).then((res) => {
+        commit('setUser', res.data.name);
+      });
+    },
+    login({ commit }, payload): any {
+      axios.post('http://localhost:3000/api/user/login', {username: payload[0], password: payload[1]}, {withCredentials: true}).then((res) => {
+        commit('setUser', res.data.name);
+      });
+    },
+    logout({ commit }): any {
+      axios.get('http://localhost:3000/api/user/logout', {withCredentials: true}).then((res) => {
+        commit('setUser', null);
+      });
     },
     loadEntries({ commit }): any {
-      axios.get('http://localhost:3000/api/entry/').then((res) => {
+      axios.get('http://localhost:3000/api/entry/', {withCredentials: true}).then((res) => {
         commit('setEntries', res.data);
       });
     },
     search({ commit }, payload): any {
-      axios.get('http://localhost:3000/api/' + payload[0] + '/search?query=' + payload[1]).then((res) => {
+      axios.get('http://localhost:3000/api/' + payload[0] + '/search?query=' + payload[1], {withCredentials: true}).then((res) => {
         if (payload[0] === 'entry') {
           commit('setQueryEntryResult', res.data);
         } else if (payload[0] === 'people') {
