@@ -23,8 +23,7 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 app.use(formParser.parse({uploadDir: os.tmpdir(), autoClean: true}));
-app.use(formParser.format());
-app.use(formParser.stream());
+app.use(formParser.format()); app.use(formParser.stream());
 app.use(formParser.union());
 app.use(session({
   name: 'rasmussen-collection',
@@ -53,4 +52,4 @@ app.get('*', function(req, res){
   res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 })
 
-app.listen(3000);
+app.listen(process.env.PORT || 8080);
