@@ -42,31 +42,31 @@ export default new Vuex.Store({
   },
   actions: {
     checkUser({ commit }): any {
-      axios.get('http://localhost:3000/api/user/loggedin', {withCredentials: true}).then((res) => {
+      axios.get('/api/user/loggedin', {withCredentials: true}).then((res) => {
         commit('setUser', res.data.name);
       });
     },
     login({ commit, dispatch }, payload): any {
-      axios.post('http://localhost:3000/api/user/login', {username: payload[0], password: payload[1]}, {withCredentials: true}).then((res) => {
+      axios.post('/api/user/login', {username: payload[0], password: payload[1]}, {withCredentials: true}).then((res) => {
         commit('setUser', res.data.name);
         commit('setEntries', []);
         dispatch('loadEntries');
       });
     },
     logout({ commit, dispatch }): any {
-      axios.get('http://localhost:3000/api/user/logout', {withCredentials: true}).then((res) => {
+      axios.get('/api/user/logout', {withCredentials: true}).then((res) => {
         commit('setUser', null);
         commit('setEntries', []);
         dispatch('loadEntries');
       });
     },
     loadEntries({ commit }): any {
-      axios.get('http://localhost:3000/api/entry/', {withCredentials: true}).then((res) => {
+      axios.get('/api/entry/', {withCredentials: true}).then((res) => {
         commit('setEntries', res.data);
       });
     },
     search({ commit }, payload): any {
-      axios.get('http://localhost:3000/api/' + payload[0] + '/search?query=' + payload[1], {withCredentials: true}).then((res) => {
+      axios.get('/api/' + payload[0] + '/search?query=' + payload[1], {withCredentials: true}).then((res) => {
         if (payload[0] === 'entry') {
           commit('setQueryEntryResult', res.data);
         } else if (payload[0] === 'people') {
@@ -75,19 +75,19 @@ export default new Vuex.Store({
       });
     },
     createEntry({ commit, dispatch }, payload): any {
-      axios.post('http://localhost:3000/api/entry/', payload, {withCredentials: true}).then((res) => {
+      axios.post('/api/entry/', payload, {withCredentials: true}).then((res) => {
         commit('setEntries', []);
         dispatch('loadEntries');
       });
     },
     modifyEntry({ commit, dispatch }, payload): any {
-      axios.post('http://localhost:3000/api/entry/modify/' + payload[0], payload[1], {withCredentials: true}).then((res) => {
+      axios.post('/api/entry/modify/' + payload[0], payload[1], {withCredentials: true}).then((res) => {
         commit('setEntries', []);
         dispatch('loadEntries');
       });
     },
     deleteEntry({ commit, dispatch }, payload): any {
-      axios.get('http://localhost:3000/api/entry/delete/' + payload, {withCredentials: true}).then((res) => {
+      axios.get('/api/entry/delete/' + payload, {withCredentials: true}).then((res) => {
         commit('setEntries', []);
         dispatch('loadEntries');
       });
