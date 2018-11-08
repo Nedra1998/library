@@ -101,10 +101,10 @@ router.post('/', (req, res, next) => {
   var owners = [];
   var ownersDescriptions = [];
   if (req.body.owners && req.body.owners.length !== 0) {
-    owners = JSON.parse(req.body.owners).map(entry => {
+    owners = req.body.owners.map(entry => {
       return entry.name
     });
-    ownersDescriptions = JSON.parse(req.body.owners).map(entry => {
+    ownersDescriptions = req.body.owners.map(entry => {
       return entry.description
     });
   }
@@ -152,11 +152,12 @@ router.post('/modify/:id', (req, res, next) => {
   if(!req.user) return res.json({'error': 'Must be logged in to create entry'});
   var owners = [];
   var ownersDescriptions = [];
+  console.log(req.body);
   if (req.body.owners && req.body.owners.length !== 0) {
-    owners = JSON.parse(req.body.owners).map(entry => {
+    owners = req.body.owners.map(entry => {
       return entry.name
     });
-    ownersDescriptions = JSON.parse(req.body.owners).map(entry => {
+    ownersDescriptions = req.body.owners.map(entry => {
       return entry.description
     });
   }

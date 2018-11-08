@@ -33,6 +33,12 @@
                     {{ printer }}
                   </router-link>
                 </dd>
+                <dt class="col-sm-3" v-if="entry.editors.length !== 0">Editors</dt>
+                <dd class="col-sm-9" v-if="entry.editors.length !== 0">
+                  <router-link class="text-primary mx-1" :to="'/people/' + editor" :key="editor" v-for="editor in entry.editors">
+                    {{ editor }}
+                  </router-link>
+                </dd>
                 <dt class="col-sm-3" v-if="entry.date !== 0">Date</dt>
                 <dd class="col-sm-9" v-if="entry.date !== 0">{{ entry.date }}</dd>
                 <dt class="col-sm-3" v-if="entry.titleTranscription !== ''">Title Transcription</dt>
@@ -55,7 +61,7 @@
                 <dt class="col-sm-3" v-if="entry.source !== ''">Source</dt>
                 <dd class="col-sm-9" v-if="entry.source !== ''">{{ entry.source }}</dd>
                 <dt class="col-sm-3" v-if="entry.acquired !== null">Acquired</dt>
-                <dd class="col-sm-9" v-if="entry.acquired !== null">{{ entry.acquired }}</dd>
+                <dd class="col-sm-9" v-if="entry.acquired !== null">{{ displayDate(entry.acquired) }}</dd>
                 <dt class="col-sm-3" v-if="entry.cost !== 0">Cost</dt>
                 <dd class="col-sm-9" v-if="entry.cost !== 0">$ {{ entry.cost }}</dd>
                 <dt class="col-sm-3" v-if="entry.appraisalValue !== 0">Appraisal</dt>
@@ -105,6 +111,9 @@ export default class Entry extends Vue {
         this.entry = entry;
       }
     }
+  }
+  private displayDate(date: any): string {
+    return date.substring(0, 10);
   }
   private markdown(source: string): any {
     const converter = new showdown.Converter();

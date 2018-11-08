@@ -83,7 +83,7 @@
           <div class="form-group row" id="transcription">
             <label class="col-sm-2 col-form-label">Title Transcription</label>
             <div class="col-sm-10">
-              <input class="form-control" v-model="entry.titleTranscription" />
+              <textarea class="form-control" v-model="entry.titleTranscription" />
             </div>
           </div>
           <div class="form-group row" id="reference">
@@ -207,6 +207,7 @@ export default class Modify extends Vue {
         this.entry.appraisalCurrency = 'usd';
       }
     }
+    console.log(this.entry);
   }
   private isValid(): boolean {
     return true;
