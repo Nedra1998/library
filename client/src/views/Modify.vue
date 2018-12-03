@@ -101,7 +101,7 @@
           <div class="form-group row" id="description">
             <label class="col-sm-2 col-form-label">Description</label>
             <div class="col-sm-10">
-              <textarea placeholder="Description" class="form-control" v-model="entry.Description" />
+              <textarea placeholder="Description" class="form-control" v-model="entry.description" />
             </div>
           </div>
           <div class="form-group row" id="owners">
@@ -195,6 +195,7 @@ export default class Modify extends Vue {
       for (const entry of this.$store.state.entries) {
         if (entry.id === this.id) {
           this.entry = entry;
+          this.entry.acquired = this.entry.acquired.split('T')[0]
           this.entry.currency = 'usd';
           this.entry.appraisalCurrency = 'usd';
         }
@@ -203,6 +204,7 @@ export default class Modify extends Vue {
     for (const entry of this.$store.state.entries) {
       if (entry.id === this.id) {
         this.entry = entry;
+        this.entry.acquired = this.entry.acquired.split('T')[0]
         this.entry.currency = 'usd';
         this.entry.appraisalCurrency = 'usd';
       }

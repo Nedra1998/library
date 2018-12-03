@@ -4,10 +4,7 @@ var bcrypt = require('bcryptjs');
 mongoose.set('useCreateIndex', true);
 
 var userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    index: true
-  },
+  name: String,
   password: String
 });
 
