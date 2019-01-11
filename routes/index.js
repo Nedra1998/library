@@ -7,6 +7,6 @@ var peopleRouter = require('./people.js');
 
 router.use('/user/', userRouter);
 router.use('/entry/', entryRouter);
-// router.use('/people/', peopleRouter);
+router.use('/people/', peopleRouter);
 
 module.exports = router;

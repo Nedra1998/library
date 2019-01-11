@@ -51,6 +51,9 @@ export default class List extends Vue {
     this.$store.watch((state) => state.entries, () => {
       this.loadIndex();
     });
+    this.$store.watch((state) => state.people, () => {
+      this.loadIndex();
+    });
     this.loadIndex();
   }
   private setUseDate(value: boolean) {
@@ -61,7 +64,7 @@ export default class List extends Vue {
     if (this.catagory === 'entry') {
       const indexSet = new Set();
       for (const entry of this.$store.state.entries) {
-        if (this.useDate === false) {
+        if (this.useDate === false && entry.title) {
           indexSet.add(entry.title[0].toUpperCase());
         } else {
           indexSet.add(Math.floor(entry.date / 100) * 100);
@@ -69,7 +72,11 @@ export default class List extends Vue {
       }
       this.index = Array.from(indexSet.values()).sort();
     } else if (this.catagory === 'people') {
-
+      const indexSet = new Set();
+      for(const person of this.$store.state.people) {
+        indexSet.add(person.name[0].toUpperCase());
+      }
+      this.index = Array.from(indexSet.values()).sort();
     }
   }
 }

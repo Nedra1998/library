@@ -13,6 +13,7 @@ export default class App extends Vue {
     super();
     this.$store.dispatch('checkUser');
     this.$store.dispatch('loadEntries');
+    this.$store.dispatch('loadPeople');
   }
 }
 </script>

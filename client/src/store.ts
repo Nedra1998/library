@@ -11,6 +11,7 @@ export default new Vuex.Store({
   state: {
     user: null,
     entries: [],
+    people: [],
     queryEntryResult: [],
     queryPeopleResult: [],
   },
@@ -30,6 +31,15 @@ export default new Vuex.Store({
     sortEntriesTitle(state) {
       state.entries = state.entries.sort((a: any, b: any): number => {
         if (a.title < b.title) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+    },
+    setPeople(state, payload) {
+      state.people = payload.sort((a: any, b: any): number => {
+        if (a.name < b.name) {
           return -1;
         } else {
           return 1;
@@ -66,6 +76,11 @@ export default new Vuex.Store({
     loadEntries({ commit }): any {
       axios.get(HOST + '/api/entry/', {withCredentials: true}).then((res) => {
         commit('setEntries', res.data);
+      });
+    },
+    loadPeople({ commit }): any {
+      axios.get(HOST + '/api/people/', {withCredentials: true}).then((res) => {
+        commit('setPeople', res.data);
       });
     },
     search({ commit }, payload): any {
