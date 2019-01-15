@@ -11,12 +11,12 @@
                   <h3 class="card-title">Authored</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.authored" :key="ent.id">
-                      <h5>{{ ent.title }}</h5>
-                      <p class="text-muted">
-                        <router-link class="text-muted mx-1" v-bind:to="'/people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
                           {{author}}
-                        </router-link>
-                      </p>
+                        </router-link></h5>
+                        <p class="text-muted mx-1">
+                          {{ ent.title }}
+                        </p>
                     </router-link>
                   </div>
                 </div>
@@ -26,12 +26,12 @@
                   <h3 class="card-title">Published</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.published" :key="ent.id">
-                      <h5>{{ ent.title }}</h5>
-                      <p class="text-muted">
-                        <router-link class="text-muted mx-1" v-bind:to="'/people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
                           {{author}}
-                        </router-link>
-                      </p>
+                        </router-link></h5>
+                        <p class="text-muted mx-1">
+                          {{ ent.title }}
+                        </p>
                     </router-link>
                   </div>
                 </div>
@@ -41,12 +41,12 @@
                   <h3 class="card-title">Printed</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.printed" :key="ent.id">
-                      <h5>{{ ent.title }}</h5>
-                      <p class="text-muted">
-                        <router-link class="text-muted mx-1" v-bind:to="'/people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
                           {{author}}
-                        </router-link>
-                      </p>
+                        </router-link></h5>
+                        <p class="text-muted mx-1">
+                          {{ ent.title }}
+                        </p>
                     </router-link>
                   </div>
                 </div>
@@ -56,12 +56,12 @@
                   <h3 class="card-title">Edited</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.edited" :key="ent.id">
-                      <h5>{{ ent.title }}</h5>
-                      <p class="text-muted">
-                        <router-link class="text-muted mx-1" v-bind:to="'/people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
                           {{author}}
-                        </router-link>
-                      </p>
+                        </router-link></h5>
+                        <p class="text-muted mx-1">
+                          {{ ent.title }}
+                        </p>
                     </router-link>
                   </div>
                 </div>
@@ -71,12 +71,12 @@
                   <h3 class="card-title">Owned</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.owned" :key="ent.id">
-                      <h5>{{ ent.title }}</h5>
-                      <p class="text-muted">
-                        <router-link class="text-muted mx-1" v-bind:to="'/people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
                           {{author}}
-                        </router-link>
-                      </p>
+                        </router-link></h5>
+                        <p class="text-muted mx-1">
+                          {{ ent.title }}
+                        </p>
                     </router-link>
                   </div>
                 </div>
@@ -89,7 +89,7 @@
           </div>
         </div>
       </div>
-    <Footer />
+      <Footer />
   </div>
 </template>
 

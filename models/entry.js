@@ -147,11 +147,11 @@ module.exports.findSearch = (query, type, loggedin, callback) => {
       keys: [
         'title',
         'authors',
+        'editors',
         'publishers',
         'owners',
         'date',
-        'printers',
-        'source'
+        'printers'
       ]
     });
     callback(null, fuse.search(query));
