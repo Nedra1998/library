@@ -11,7 +11,7 @@
                   <h3 class="card-title">Authored</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.authored" :key="ent.id">
-                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="author" v-for="author in ent.authors" :key="author">
                           {{author}}
                         </router-link></h5>
                         <p class="text-muted mx-1">
@@ -26,7 +26,7 @@
                   <h3 class="card-title">Published</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.published" :key="ent.id">
-                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="author" v-for="author in ent.authors" :key="author">
                           {{author}}
                         </router-link></h5>
                         <p class="text-muted mx-1">
@@ -41,7 +41,7 @@
                   <h3 class="card-title">Printed</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.printed" :key="ent.id">
-                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="author" v-for="author in ent.authors" :key="author">
                           {{author}}
                         </router-link></h5>
                         <p class="text-muted mx-1">
@@ -56,7 +56,7 @@
                   <h3 class="card-title">Edited</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.edited" :key="ent.id">
-                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="author" v-for="author in ent.authors" :key="author">
                           {{author}}
                         </router-link></h5>
                         <p class="text-muted mx-1">
@@ -71,7 +71,7 @@
                   <h3 class="card-title">Owned</h3>
                   <div class="list-group py-3">
                     <router-link v-bind:to="'/entry/' + ent.id" class="list-group-item list-group-item-active align-items-start" v-for="ent in entries.owned" :key="ent.id">
-                      <h5><router-link v-bind:to="'people/' + author" v-for="author in ent.authors" :key="author">
+                      <h5><router-link v-bind:to="author" v-for="author in ent.authors" :key="author">
                           {{author}}
                         </router-link></h5>
                         <p class="text-muted mx-1">
@@ -94,7 +94,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 
@@ -108,6 +108,15 @@ export default class People extends Vue {
   @Prop() private name: any;
   private entry: any = null;
   private entries: any = null;
+  @Watch('name')
+  private onNameChange() {
+    for (const entry of this.$store.state.people) {
+      if (entry.name === this.name) {
+        this.entry = entry;
+      }
+    }
+    this.loadEntries();
+  }
   private mounted() {
     this.$store.watch((state) => state.people, () => {
       for (const entry of this.$store.state.people) {
