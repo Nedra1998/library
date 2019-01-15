@@ -31,8 +31,12 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+// app.use(cors({
+//   origin: 'http://localhost:8080',
+//   credentials: true
+// }));
 app.use(cors({
-  origin: 'http://localhost:8080',
+  origin: ['http://localhost:8080', 'http://10.0.0.10:8080'],
   credentials: true
 }));
 

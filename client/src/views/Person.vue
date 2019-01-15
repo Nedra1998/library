@@ -111,7 +111,7 @@ export default class People extends Vue {
   private mounted() {
     this.$store.watch((state) => state.people, () => {
       for (const entry of this.$store.state.people) {
-        if (entry.name=== this.name) {
+        if (entry.name === this.name) {
           this.entry = entry;
         }
         this.loadEntries();
@@ -125,22 +125,22 @@ export default class People extends Vue {
     this.loadEntries();
   }
   private loadEntries() {
-    this.entries = {authored: [],published:[], printed: [], edited: [], owned: []};
-    if(this.entry === null) return;
-    for(const ent of this.$store.state.entries) {
-      if (this.entry.authored.includes(ent.id)){
+    this.entries = {authored: [], published: [], printed: [], edited: [], owned: []};
+    if (this.entry === null) { return; }
+    for (const ent of this.$store.state.entries) {
+      if (this.entry.authored.includes(ent.id)) {
         this.entries.authored.push(ent);
       }
-      if(this.entry.published.includes(ent.id)){
+      if (this.entry.published.includes(ent.id)) {
         this.entries.published.push(ent);
       }
-      if(this.entry.printed.includes(ent.id)){
+      if (this.entry.printed.includes(ent.id)) {
         this.entries.printed.push(ent);
       }
-      if(this.entry.edited.includes(ent.id)){
+      if (this.entry.edited.includes(ent.id)) {
         this.entries.edited.push(ent);
       }
-      if(this.entry.owned.includes(ent.id)){
+      if (this.entry.owned.includes(ent.id)) {
         this.entries.owned.push(ent);
       }
     }

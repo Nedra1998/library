@@ -10,6 +10,7 @@ const HOST = '';
 export default new Vuex.Store({
   state: {
     user: null,
+    sortMethod: 'title',
     entries: [],
     people: [],
     queryEntryResult: [],
@@ -36,6 +37,36 @@ export default new Vuex.Store({
           return 1;
         }
       });
+      state.sortMethod = 'title';
+    },
+    sortEntriesDate(state) {
+      state.entries = state.entries.sort((a: any, b: any): number => {
+        if (a.date < b.date) { return -1; }
+        return 1;
+      });
+      state.sortMethod = 'date';
+    },
+    sortEntriesAuthor(state) {
+      state.entries = state.entries.sort((a: any, b: any): number => {
+        if (a.authors.length === 0 && b.authors.length === 0) {
+          if (a.date < b.date) { return -1; }
+          return 1;
+        } else if (a.authors.length === 0) {
+          return -1;
+        } else if (b.authors.length === 0) {
+          return 1;
+        } else {
+          if (a.authors[0] < b.authors[0]) {
+            return -1;
+          } else if (a.authors[0] === b.authors[0]) {
+            if (a.date < b.date) { return -1; }
+            return 1;
+          }
+          return 1;
+        }
+        return 0;
+      });
+      state.sortMethod = 'author';
     },
     setPeople(state, payload) {
       state.people = payload.sort((a: any, b: any): number => {

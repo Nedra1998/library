@@ -195,7 +195,7 @@ export default class Modify extends Vue {
       for (const entry of this.$store.state.entries) {
         if (entry.id === this.id) {
           this.entry = entry;
-          this.entry.acquired = this.entry.acquired.split('T')[0]
+          this.entry.acquired = this.entry.acquired.split('T')[0];
           this.entry.currency = 'usd';
           this.entry.appraisalCurrency = 'usd';
         }
@@ -204,12 +204,11 @@ export default class Modify extends Vue {
     for (const entry of this.$store.state.entries) {
       if (entry.id === this.id) {
         this.entry = entry;
-        this.entry.acquired = this.entry.acquired.split('T')[0]
+        this.entry.acquired = this.entry.acquired.split('T')[0];
         this.entry.currency = 'usd';
         this.entry.appraisalCurrency = 'usd';
       }
     }
-    console.log(this.entry);
   }
   private isValid(): boolean {
     return true;
