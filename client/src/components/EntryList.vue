@@ -26,13 +26,9 @@ export default class EntryList extends Vue {
   @Prop() private catagory!: string;
   @Prop() private sortKey!: string;
   @Prop() private value!: any;
-  private mounted() {
-    //this.$store.watch((state) => state.currentTag, () => {
-    //  this.$forceUpdate();
-    //});
-  }
   private shouldDisplayEntry(entry: any): boolean {
-    if (this.$route.path === '/tags' && this.$store.state.currentTag && !entry.tags.includes(this.$store.state.currentTag)) {
+    if (this.$route.path === '/tags' && this.$store.state.currentTag &&
+          !entry.tags.includes(this.$store.state.currentTag)) {
       return false;
     }
     return this.value === 'all' ||

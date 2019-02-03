@@ -4,8 +4,8 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
-const HOST = 'http://localhost:8000';
-// const HOST = '';
+// const HOST = 'http://localhost:8000';
+const HOST = '';
 
 export default new Vuex.Store({
   state: {
@@ -92,7 +92,7 @@ export default new Vuex.Store({
     setQueryPeopleResult(state, payload) {
       state.queryPeopleResult = payload;
     },
-    setTag(state, payload){
+    setTag(state, payload) {
       state.currentTag = payload;
     },
   },

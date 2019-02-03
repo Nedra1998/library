@@ -70,7 +70,7 @@
               <dl class="row" v-if="entry.tags.length !== 0">
                 <dt class="col-sm-3">Tags</dt>
                 <dd class="col-sm-9">
-                  <router-link :to="'/tags/' + tag" class="badge badge-primary mx-1" :key="tag" v-for="tag in entry.tags">{{ tag }}</router-link>
+                  <router-link to="/tags" class="badge badge-primary mx-1" :key="tag" v-for="tag in entry.tags" v-on:click.native="$store.commit('setTag', tag)">{{ tag }}</router-link>
                 </dd>
               </dl>
               <div v-if="$store.state.user !== null">

@@ -104,6 +104,12 @@
               <textarea placeholder="Description" class="form-control" v-model="entry.description" />
             </div>
           </div>
+          <div class="form-group row" id="tags">
+            <label class="col-sm-2 col-form-label">Tags</label>
+            <div class="col-sm-10">
+              <input class="form-control" v-model="entry.tags" />
+            </div>
+          </div>
           <div class="form-group row" id="owners">
             <label class="col-sm-2 col-form-label">Owners</label>
             <div class="col-sm-10">
@@ -195,6 +201,7 @@ export default class Modify extends Vue {
       for (const entry of this.$store.state.entries) {
         if (entry.id === this.id) {
           this.entry = entry;
+          this.entry.tags = this.entry.tags.join(', ');
           this.entry.acquired = this.entry.acquired.split('T')[0];
           this.entry.currency = 'usd';
           this.entry.appraisalCurrency = 'usd';
@@ -204,6 +211,7 @@ export default class Modify extends Vue {
     for (const entry of this.$store.state.entries) {
       if (entry.id === this.id) {
         this.entry = entry;
+        this.entry.tags = this.entry.tags.join(', ');
         this.entry.acquired = this.entry.acquired.split('T')[0];
         this.entry.currency = 'usd';
         this.entry.appraisalCurrency = 'usd';
@@ -216,6 +224,9 @@ export default class Modify extends Vue {
   private submit(): any {
     this.convert(this.entry.cost, this.entry.currency, this.entry.acquired, (value: number) => {
       this.entry.cost = value;
+      this.entry.tags = this.entry.tags.split(',').map((item: string): string => {
+        return item.trim();
+      });
       this.convert(this.entry.appraisalValue, this.entry.appraisalCurrency, null, (value2: number) => {
         this.entry.appraisalValue = value2;
         this.$store.dispatch('modifyEntry', [this.id, this.entry]);

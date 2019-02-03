@@ -29,7 +29,6 @@ import List from '@/components/List.vue';
 })
 export default class Tags extends Vue {
   private setTag(tag: string): void {
-    console.log("HI!\n");
     this.$store.commit('setTag', tag);
   }
 }

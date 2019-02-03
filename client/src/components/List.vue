@@ -60,7 +60,7 @@ export default class List extends Vue {
     });
     this.$store.watch((state) => state.currentTag, () => {
       this.loadIndex();
-    })
+    });
     this.sortKey = this.$store.state.sortMethod;
     this.loadIndex();
   }
@@ -81,24 +81,36 @@ export default class List extends Vue {
       const indexSet = new Set();
       for (const entry of this.$store.state.entries) {
         if (this.sortKey === 'title' && entry.title) {
-          if (this.$route.path === '/tags' && this.$store.state.currentTag){
-            if (entry.tags.includes(this.$store.state.currentTag)){
+          if (this.$route.path === '/tags' && this.$store.state.currentTag) {
+            if (entry.tags.includes(this.$store.state.currentTag)) {
               indexSet.add(entry.title[0].toUpperCase());
             }
-          }else{
+          } else {
             indexSet.add(entry.title[0].toUpperCase());
           }
         } else if (this.sortKey === 'date') {
-          indexSet.add(Math.floor(entry.date / 100) * 100);
+          if (this.$route.path === '/tags' && this.$store.state.currentTag) {
+            if (entry.tags.includes(this.$store.state.currentTag)) {
+              indexSet.add(Math.floor(entry.date / 100) * 100);
+            }
+          } else {
+            indexSet.add(Math.floor(entry.date / 100) * 100);
+          }
         } else if (this.sortKey === 'author' && entry.authors.length !== 0 && entry.authors[0] !== '') {
-          indexSet.add(entry.authors[0][0].toUpperCase());
+          if (this.$route.path === '/tags' && this.$store.state.currentTag) {
+            if (entry.tags.includes(this.$store.state.currentTag)) {
+              indexSet.add(entry.authors[0][0].toUpperCase());
+            }
+          } else {
+            indexSet.add(entry.authors[0][0].toUpperCase());
+          }
         }
       }
       this.index = Array.from(indexSet.values()).sort();
     } else if (this.catagory === 'people') {
       const indexSet = new Set();
       for (const person of this.$store.state.people) {
-        if (person.name){
+        if (person.name) {
           indexSet.add(person.name[0].toUpperCase());
         }
       }
