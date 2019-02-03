@@ -4,8 +4,8 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
-// const HOST = 'http://localhost:8000';
-const HOST = '';
+const HOST = 'http://localhost:8000';
+// const HOST = '';
 
 export default new Vuex.Store({
   state: {
@@ -13,6 +13,8 @@ export default new Vuex.Store({
     sortMethod: 'title',
     entries: [],
     people: [],
+    tags: [],
+    currentTag: null,
     queryEntryResult: [],
     queryPeopleResult: [],
   },
@@ -28,6 +30,13 @@ export default new Vuex.Store({
           return 1;
         }
       });
+      const tags: any = new Set();
+      for (const ent of payload) {
+        for (const tg of ent.tags) {
+          tags.add(tg);
+        }
+      }
+      state.tags = Array.from(tags);
     },
     sortEntriesTitle(state) {
       state.entries = state.entries.sort((a: any, b: any): number => {
@@ -82,6 +91,9 @@ export default new Vuex.Store({
     },
     setQueryPeopleResult(state, payload) {
       state.queryPeopleResult = payload;
+    },
+    setTag(state, payload){
+      state.currentTag = payload;
     },
   },
   actions: {

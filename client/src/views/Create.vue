@@ -104,6 +104,12 @@
               <textarea placeholder="Description" class="form-control" v-model="entry.Description" />
             </div>
           </div>
+          <div class="form-group row" id="tags">
+            <label class="col-sm-2 col-form-label">Tags</label>
+            <div class="col-sm-10">
+              <input class="form-control" v-model="entry.tags" />
+            </div>
+          </div>
           <div class="form-group row" id="owners">
             <label class="col-sm-2 col-form-label">Owners</label>
             <div class="col-sm-10">
@@ -200,6 +206,7 @@ export default class Entry extends Vue {
     binding: '',
     description: '',
     owners: [],
+    tags: '',
     source: '',
     acquired: '0001-01-01',
     cost: 0,
@@ -211,6 +218,9 @@ export default class Entry extends Vue {
     return true;
   }
   private submit(): any {
+    this.entry.tags = this.entry.tags.split(',').map((item: string): string => {
+      return item.trim();
+    });
     this.convert(this.entry.cost, this.entry.currency, this.entry.acquired, (value: number) => {
       this.entry.cost = value;
       this.convert(this.entry.appraisalValue, this.entry.appraisalCurrency, null, (value2: number) => {

@@ -52,7 +52,7 @@
                 <dt class="col-sm-3" v-if="entry.owners.length !== 0">Owners</dt>
                 <dd class="col-sm-9" v-if="entry.owners.length !== 0">
                   <dl class="row" :key="owner.name" v-for="owner in entry.owners">
-                    <dt class="col-sm-3"><router-link class="text-primary mx-1" :to="'/peolpe/' + owner">{{ owner.name }}</router-link></dt>
+                    <dt class="col-sm-3"><router-link class="text-primary mx-1" :to="'/people/' + owner.name">{{ owner.name }}</router-link></dt>
                     <dd class="col-sm-9"><p v-html="markdown(owner.description)"></p></dd>
                   </dl>
                 </dd>
@@ -66,6 +66,12 @@
                 <dd class="col-sm-9" v-if="entry.cost !== 0">$ {{ entry.cost }}</dd>
                 <dt class="col-sm-3" v-if="entry.appraisalValue !== 0">Appraisal</dt>
                 <dd class="col-sm-9" v-if="entry.appraisalValue !== 0">$ {{ entry.appraisalValue }}</dd>
+              </dl>
+              <dl class="row" v-if="entry.tags.length !== 0">
+                <dt class="col-sm-3">Tags</dt>
+                <dd class="col-sm-9">
+                  <router-link :to="'/tags/' + tag" class="badge badge-primary mx-1" :key="tag" v-for="tag in entry.tags">{{ tag }}</router-link>
+                </dd>
               </dl>
               <div v-if="$store.state.user !== null">
                 <button typ="button" class="btn btn-outline-danger col-sm-2 mx-1" v-on:click="deleteEntry()">Delete</button>

@@ -19,7 +19,8 @@ var entrySchema = mongoose.Schema({
   reference: String,
   source: String,
   type: String,
-  files: [String]
+  files: [String],
+  tags: [String]
 });
 
 var Entry = module.exports = mongoose.model('Entry', entrySchema);
@@ -76,6 +77,15 @@ module.exports.getAll = (type, callback) => {
   } : {}, callback);
 }
 
+module.exports.getTag = (tag, type, callback) => {
+  Entry.find(type ? {
+    tags: tag,
+    type: type
+  } : {
+    tags: tag
+  });
+}
+
 module.exports.getName = (name, loggedin, callback) => {
   re = new RegExp('^' + name.toLowerCase() + '$', 'i');
   Entry.find({
@@ -93,6 +103,7 @@ module.exports.getName = (name, loggedin, callback) => {
     });
   });
 }
+
 module.exports.getTitles = (type, callback) => {
   Entry.find(type ? {
     type: type
@@ -120,7 +131,7 @@ module.exports.getDates = (type, callback) => {
 module.exports.getPeople = (type, callback) => {
   Entry.find(type ? {
     type: type
-  } : type, (err, entries) => {
+  } : {}, (err, entries) => {
     if (err) return callback(err);
     var people = new Set([]);
     for (var key in entries) {
@@ -187,6 +198,7 @@ module.exports.serialize = (entry) => {
     titleTranscription: entry.titleTranscription,
     reference: entry.reference,
     type: entry.type,
+    tags: entry.tags,
     files: entry.files.map((file) => {
       return path.relative(appRoot + '/public', file);
     })
@@ -223,6 +235,7 @@ module.exports.safeSerialize = (entry) => {
     titleTranscription: entry.titleTranscription,
     reference: entry.reference,
     type: entry.type,
+    tags: entry.tags,
     files: entry.files.map((file) => {
       return path.relative(appRoot + '/public', file);
     })

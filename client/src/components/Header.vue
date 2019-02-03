@@ -16,6 +16,11 @@
             People
           </router-link>
         </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/tags" v-bind:class="{ 'active': $route.path === '/tag' }">
+            Tags 
+          </router-link>
+        </li>
         <li class="nav-item" v-if="$store.state.user !== null">
           <router-link class="nav-link" to="/create" v-bind:class="{ 'active': $route.path === '/create' }">
             Create

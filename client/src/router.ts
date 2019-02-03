@@ -7,6 +7,7 @@ import Entry from './views/Entry.vue';
 import Person from './views/Person.vue';
 import Create from './views/Create.vue';
 import Modify from './views/Modify.vue';
+import Tags from './views/Tags.vue';
 
 Vue.use(Router);
 
@@ -49,6 +50,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+    },
+    {
+      path: '/tags',
+      name: 'tags',
+      component: Tags,
     },
   ],
 });

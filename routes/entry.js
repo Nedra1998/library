@@ -126,6 +126,7 @@ router.post('/', (req, res, next) => {
     appraisalValue: req.body.appraisalValue,
     titleTranscription: req.body.titleTranscription,
     reference: req.body.reference,
+    tags: glist(req.body.tags),
     type: req.body.type
   }, (err, entry) => {
     if (err) return console.log(err);
