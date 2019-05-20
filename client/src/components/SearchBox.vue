@@ -3,7 +3,7 @@
     <div class="card">
       <div class="card-body">
         <h2 class="card-title">Search</h2>
-        <form v-on:submit="handleSearch()">
+        <form v-on:submit.prevent>
           <div class="form-group row px-3">
             <div class="col-md-10">
               <input class="form-control" type="search" placeholder="Search" v-model="query" v-on:input="handleSearchLive()"/>

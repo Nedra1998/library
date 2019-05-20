@@ -2,7 +2,7 @@
   <div class="entryList">
     <div class="list-group py-3" v-if="catagory === 'entry'">
       <router-link v-bind:to="catagory + '/' + entry.id" class="list-group-item list-group-item-active align-items-start" v-for="entry in $store.state.entries" :key="entry.id" v-if="shouldDisplayEntry(entry)">
-        <h5><router-link v-bind:to="'people/' + author" v-for="author in entry.authors" :key="author">
+        <h5><router-link v-bind:to="catagory + '/' + entry.id" v-for="author in entry.authors" :key="author">
             {{author}}
           </router-link></h5>
           <p class="text-muted mx-1">

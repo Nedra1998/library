@@ -150,7 +150,7 @@ module.exports.findSearch = (query, type, loggedin, callback) => {
     entries = (loggedin ? entries.map(Entry.serialize) : entries.map(Entry.safeSerialize));
     var fuse = new Fuse(entries, {
       shouldSort: true,
-      threshold: 0.5,
+      threshold: 0.25,
       location: 0,
       distance: 100,
       maxPatternLength: 32,
@@ -162,7 +162,9 @@ module.exports.findSearch = (query, type, loggedin, callback) => {
         'publishers',
         'owners',
         'date',
-        'printers'
+        'printers',
+        'description',
+        'binding'
       ]
     });
     callback(null, fuse.search(query));
