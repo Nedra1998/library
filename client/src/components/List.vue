@@ -106,7 +106,7 @@ export default class List extends Vue {
           }
         }
       }
-      this.index = Array.from(indexSet.values()).sort();
+      this.index = Array.from(indexSet.values()).sort().map((x) => { return x as string });
     } else if (this.catagory === 'people') {
       const indexSet = new Set();
       for (const person of this.$store.state.people) {
@@ -114,7 +114,7 @@ export default class List extends Vue {
           indexSet.add(person.name[0].toUpperCase());
         }
       }
-      this.index = Array.from(indexSet.values()).sort();
+      this.index = Array.from(indexSet.values()).sort().map((x) => { return x as string });
     }
   }
 }
