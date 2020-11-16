@@ -7,7 +7,7 @@
           <label for="inputName" class="sr-only">Name</label>
           <input type="name" id="inputName" class="form-control" placeholder="Name" required autoFocus v-model="name" />
           <label for="inputPassword" class="sr-only">Password</label>
-          <input type="password" id="inputPassword" class="form-control" placeholder="Name" required v-model="password" />
+          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required v-model="password" />
           <div class="p-3">
             <button class="btn btn-lg btn-primary btn-block" type="button" v-on:click="userLogin()">Sign In</button>
           </div>

@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 app.use(passport.initialize());
 app.use(passport.session());
 
-const mongodb = 'mongodb://Admin:' + process.env.DB_SECRET + '@ds131687.mlab.com:31687/rasmussen-collection';
+const mongodb = 'mongodb+srv://Admin:' + process.env.DB_SECRET + '@rasmussen-collection.ny5t9.mongodb.net/rasmussen-collection?retryWrites=true&w=majority';
 mongoose.connect(mongodb, {useNewUrlParser: true});
 mongoose.Promise=global.Promise;
 var db = mongoose.connection;
